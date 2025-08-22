@@ -1,14 +1,16 @@
 //! Contains different types of light sources.
 
-use gfx;
-use object::{Base, Object, ObjectType};
+// use gfx;
 use std::ops;
 
-use camera::Orthographic;
-use color::Color;
-use hub::{self, Operation, SubLight, SubNode};
-use render::{BackendResources, ShadowFormat};
-use scene::SyncGuard;
+use crate::{
+    object::{Base, Object, ObjectType},
+    camera::Orthographic,
+    color::Color,
+    hub::{self, Operation, SubLight, SubNode},
+    render::{BackendResources, ShadowFormat},
+    scene::SyncGuard,
+};
 
 #[derive(Debug)]
 pub(crate) enum LightOperation {
@@ -40,8 +42,10 @@ impl Light for Point {}
 /// and [`DirectionalLight`](struct.DirectionalLight.html).
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct ShadowMap {
-    pub(crate) resource: gfx::handle::ShaderResourceView<BackendResources, f32>,
-    pub(crate) target: gfx::handle::DepthStencilView<BackendResources, ShadowFormat>,
+    // pub(crate) resource: gfx::handle::ShaderResourceView<BackendResources, f32>,
+    pub(crate) resource: wgpu::ShaderSource,
+    // pub(crate) target: gfx::handle::DepthStencilView<BackendResources, ShadowFormat>,
+    pub(crate) target: wgpu::TextureView,
 }
 
 #[derive(Clone, Debug, PartialEq)]

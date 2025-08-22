@@ -1,6 +1,6 @@
 //! Axes for handling input.
 
-use glutin::VirtualKeyCode as KeyCode;
+use winit::keyboard::KeyCode;
 
 /// Two buttons responsible for opposite directions along specific axis.
 #[derive(Clone, Copy, Debug, PartialEq, Hash)]
@@ -26,6 +26,6 @@ pub struct Raw {
 }
 
 /// Axis for left and right arrow keys.
-pub const AXIS_LEFT_RIGHT: Key = Key { neg: KeyCode::Left, pos: KeyCode::Right };
+pub const AXIS_LEFT_RIGHT: Key = Key { neg: KeyCode::ArrowLeft, pos: KeyCode::ArrowRight };
 /// Axis for up and down arrow keys.
-pub const AXIS_DOWN_UP: Key = Key { neg: KeyCode::Down, pos: KeyCode::Up };
+pub const AXIS_DOWN_UP: Key = Key { neg: KeyCode::ArrowDown, pos: KeyCode::ArrowUp };

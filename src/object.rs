@@ -4,20 +4,20 @@ use std::fmt;
 use std::hash::{Hash, Hasher};
 use std::sync::mpsc;
 
-use mint;
+// #[cfg(feature = "audio")]
+// use audio;
 
-#[cfg(feature = "audio")]
-use audio;
-
-use camera::Camera;
-use hub::{Hub, Message, Operation, SubLight, SubNode};
-use light;
-use mesh::Mesh;
-use node::NodePointer;
-use scene::SyncGuard;
-use skeleton::{Bone, Skeleton};
-use sprite::Sprite;
-use text::Text;
+use crate::{
+    camera::Camera,
+    hub::{Hub, Message, Operation, SubLight, SubNode},
+    light,
+    mesh::Mesh,
+    node::NodePointer,
+    scene::SyncGuard,
+    skeleton::{Bone, Skeleton},
+    sprite::Sprite,
+    text::Text,
+};
 
 //Note: no local state should be here, only remote links
 /// `Base` represents a concrete entity that can be added to the scene.
@@ -181,8 +181,8 @@ impl Object for Base {
 
             SubNode::Group { .. } => ObjectType::Group(Group { object: self.clone() }),
 
-            #[cfg(feature = "audio")]
-            SubNode::Audio(..) => ObjectType::AudioSource(audio::Source { object: self.clone() }),
+            // #[cfg(feature = "audio")]
+            // SubNode::Audio(..) => ObjectType::AudioSource(audio::Source { object: self.clone() }),
 
             SubNode::UiText(..) => ObjectType::Text(Text { object: self.clone() }),
 
@@ -215,9 +215,9 @@ impl Object for Base {
 /// [`SyncGuard::resolve_data`]: ../scene/struct.SyncGuard.html#method.resolve_data
 #[derive(Debug, Clone)]
 pub enum ObjectType {
-    #[cfg(feature = "audio")]
-    /// An audio source.
-    AudioSource(audio::Source),
+    // #[cfg(feature = "audio")]
+    // /// An audio source.
+    // AudioSource(audio::Source),
 
     /// An ambient light.
     AmbientLight(light::Ambient),

@@ -1,12 +1,12 @@
-use cgmath;
-use mint;
-use object;
+use std::f32::consts::PI;
 use std::ops;
 
 use cgmath::Rotation3;
-use input::{axis, Input, Key};
-use object::Object;
-use std::f32::consts::PI;
+
+use crate::{
+    input::{Input, Key, axis},
+    object::{Base, Object},
+};
 
 #[derive(Clone, Debug, PartialEq)]
 struct Axes {
@@ -24,7 +24,7 @@ impl Default for Axes {
 /// Controls for first person camera.
 #[derive(Clone, Debug, PartialEq)]
 pub struct FirstPerson {
-    object: object::Base,
+    object: Base,
     position: mint::Point3<f32>,
     yaw: f32,
     pitch: f32,
@@ -39,7 +39,7 @@ pub struct FirstPerson {
 /// Constructs custom [`FirstPerson`](struct.FirstPerson.html) controls.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Builder {
-    object: object::Base,
+    object: Base,
     position: mint::Point3<f32>,
     pitch_range: Option<ops::Range<f32>>,
     yaw: f32,

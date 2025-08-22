@@ -1,5 +1,5 @@
-#[cfg(feature = "gltf")]
-mod load_gltf;
+// #[cfg(feature = "gltf")]
+// mod load_gltf;
 
 use std::borrow::Cow;
 use std::collections::hash_map::{Entry, HashMap};
@@ -9,37 +9,39 @@ use std::path::{Path, PathBuf};
 use std::{cmp, fs, io, iter, ops};
 
 use cgmath::Vector3;
-use gfx;
-use gfx::format::I8Norm;
-use gfx::traits::{Factory as Factory_, FactoryExt};
-use hub;
-use image;
+// use gfx;
+// use gfx::format::I8Norm;
+
+struct I8Norm {}
+
+// use gfx::traits::{Factory as Factory_, FactoryExt};
+use crate::hub;
 use itertools::Either;
-use mint;
-use obj;
 
-#[cfg(feature = "audio")]
-use audio;
+// #[cfg(feature = "audio")]
+// use audio;
 
-use animation;
-use camera::{Camera, Projection, ZRange};
-use color::{Color, BLACK};
-use geometry::Geometry;
-use hub::{Hub, HubPtr, LightData, SubLight, SubNode};
-use light::{Ambient, Directional, Hemisphere, Point, ShadowMap};
-use material::{self, Material};
-use mesh::{DynamicMesh, Mesh};
-use object::{self, Group, Object};
-use render::{basic_pipe, BackendFactory, BackendResources, BasicPipelineState, DisplacementContribution, DynamicData, GpuData, Instance, InstanceCacheKey, PipelineCreationError, ShadowFormat, Source, Vertex, DEFAULT_VERTEX, VECS_PER_BONE, ZEROED_DISPLACEMENT_CONTRIBUTION};
-use scene::{Background, Scene};
-use skeleton::{Bone, InverseBindMatrix, Skeleton};
-use sprite::Sprite;
-use template::{InstancedGeometry, LightTemplate, SubLightTemplate, Template};
-use text::{Font, Text, TextData};
-use texture::{CubeMap, CubeMapPath, FilterMethod, Sampler, Texture, WrapMode};
+use crate::{
+    animation,
+    camera::{Camera, Projection, ZRange},
+    color::{Color, BLACK},
+    geometry::Geometry,
+    hub::{Hub, HubPtr, LightData, SubLight, SubNode},
+    light::{Ambient, Directional, Hemisphere, Point, ShadowMap},
+    material::{self, Material},
+    mesh::{DynamicMesh, Mesh},
+    object::{self, Group, Object},
+    render::{basic_pipe, BackendFactory, BackendResources, BasicPipelineState, DisplacementContribution, DynamicData, GpuData, Instance, InstanceCacheKey, PipelineCreationError, ShadowFormat, Source, Vertex, DEFAULT_VERTEX, VECS_PER_BONE, ZEROED_DISPLACEMENT_CONTRIBUTION},
+    scene::{Background, Scene},
+    skeleton::{Bone, InverseBindMatrix, Skeleton},
+    sprite::Sprite,
+    template::{InstancedGeometry, LightTemplate, SubLightTemplate, Template},
+    text::{Font, Text, TextData},
+    texture::{CubeMap, CubeMapPath, FilterMethod, Sampler, Texture, WrapMode},
+};
 
-const TANGENT_X: [I8Norm; 4] = [I8Norm(1), I8Norm(0), I8Norm(0), I8Norm(1)];
-const NORMAL_Z: [I8Norm; 4] = [I8Norm(0), I8Norm(0), I8Norm(1), I8Norm(0)];
+// const TANGENT_X: [I8Norm; 4] = [I8Norm(1), I8Norm(0), I8Norm(0), I8Norm(1)];
+// const NORMAL_Z: [I8Norm; 4] = [I8Norm(0), I8Norm(0), I8Norm(1), I8Norm(0)];
 
 const QUAD: [Vertex; 4] = [Vertex { pos: [-1.0, -1.0, 0.0, 1.0], uv: [0.0, 0.0], ..DEFAULT_VERTEX }, Vertex { pos: [1.0, -1.0, 0.0, 1.0], uv: [1.0, 0.0], ..DEFAULT_VERTEX }, Vertex { pos: [-1.0, 1.0, 0.0, 1.0], uv: [0.0, 1.0], ..DEFAULT_VERTEX }, Vertex { pos: [1.0, 1.0, 0.0, 1.0], uv: [1.0, 1.0], ..DEFAULT_VERTEX }];
 
@@ -50,19 +52,23 @@ pub type MapVertices<'a> = gfx::mapping::Writer<'a, BackendResources, Vertex>;
 pub struct Factory {
     pub(crate) backend: BackendFactory,
     hub: HubPtr,
-    quad_buf: gfx::handle::Buffer<BackendResources, Vertex>,
+    // quad_buf: gfx::handle::Buffer<BackendResources, Vertex>,
     texture_cache: HashMap<PathBuf, Texture<[f32; 4]>>,
-    default_sampler: gfx::handle::Sampler<BackendResources>,
+    // default_sampler: gfx::handle::Sampler<BackendResources>,
 }
 
 fn f2i(x: f32) -> I8Norm {
-    I8Norm(cmp::min(cmp::max((x * 127.0) as isize, -128), 127) as i8)
+    // I8Norm(cmp::min(cmp::max((x * 127.0) as isize, -128), 127) as i8)
+    I8Norm {}
 }
 
 impl Factory {
-    fn create_instance_buffer(&mut self) -> gfx::handle::Buffer<BackendResources, Instance> {
-        // TODO: Better error handling
-        self.backend.create_buffer(1, gfx::buffer::Role::Vertex, gfx::memory::Usage::Dynamic, gfx::memory::Bind::TRANSFER_DST).unwrap()
+    // fn create_instance_buffer(&mut self) -> gfx::handle::Buffer<BackendResources, Instance> {
+    //     // TODO: Better error handling
+    //     self.backend.create_buffer(1, gfx::buffer::Role::Vertex, gfx::memory::Usage::Dynamic, gfx::memory::Bind::TRANSFER_DST).unwrap()
+    // }
+    fn create_instance_buffer(&mut self) -> wgpu::Buffer {
+        todo!()
     }
 
     fn create_gpu_data(&mut self, geometry: Geometry) -> GpuData {
@@ -70,7 +76,8 @@ impl Factory {
         let (vbuf, mut slice) = if geometry.faces.is_empty() {
             self.backend.create_vertex_buffer_with_slice(&vertices, ())
         } else {
-            let faces: &[u32] = gfx::memory::cast_slice(&geometry.faces);
+            // let faces: &[u32] = gfx::memory::cast_slice(&geometry.faces);
+            let faces = todo!();
             self.backend.create_vertex_buffer_with_slice(&vertices, faces)
         };
         slice.instances = Some((1, 0));
@@ -103,8 +110,10 @@ impl Factory {
                 displacement_contributions.push(contribution);
             }
 
-            let texture_and_view = self.backend.create_texture_immutable::<[f32; 4]>(gfx::texture::Kind::D2(num_vertices as _, 3 * num_shapes as gfx::texture::Size, gfx::texture::AaMode::Single), gfx::texture::Mipmap::Provided, &[gfx::memory::cast_slice(&contents)]).unwrap();
-            Some(texture_and_view)
+            // let texture_and_view = self.backend.create_texture_immutable::<[f32; 4]>(gfx::texture::Kind::D2(num_vertices as _, 3 * num_shapes as gfx::texture::Size, gfx::texture::AaMode::Single), gfx::texture::Mipmap::Provided, &[gfx::memory::cast_slice(&contents)]).unwrap();
+            // Some(texture_and_view)
+
+            todo!()
         } else {
             None
         };
@@ -289,8 +298,10 @@ impl Factory {
     /// [`Skeleton`]: ../skeleton/struct.Skeleton.html
     /// [`Bone`]: ../skeleton/struct.Bone.html
     pub fn skeleton(&mut self, bones: Vec<Bone>) -> Skeleton {
-        let gpu_buffer = self.backend.create_buffer(bones.len() * VECS_PER_BONE, gfx::buffer::Role::Constant, gfx::memory::Usage::Dynamic, gfx::memory::Bind::SHADER_RESOURCE).expect("create GPU target buffer");
-        let gpu_buffer_view = self.backend.view_buffer_as_shader_resource(&gpu_buffer).expect("create shader resource view for GPU target buffer");
+        // let gpu_buffer = self.backend.create_buffer(bones.len() * VECS_PER_BONE, gfx::buffer::Role::Constant, gfx::memory::Usage::Dynamic, gfx::memory::Bind::SHADER_RESOURCE).expect("create GPU target buffer");
+        let gpu_buffer = todo!();
+        // let gpu_buffer_view = self.backend.view_buffer_as_shader_resource(&gpu_buffer).expect("create shader resource view for GPU target buffer");
+        let gpu_buffer = todo!();
         let data = hub::SkeletonData { bones, gpu_buffer, gpu_buffer_view };
         let object = self.hub.lock().unwrap().spawn_skeleton(data);
         Skeleton { object }
@@ -348,12 +359,14 @@ impl Factory {
 
     fn mesh_vertices(geometry: &Geometry) -> Vec<Vertex> {
         let position_iter = geometry.base.vertices.iter();
-        let normal_iter = if geometry.base.normals.is_empty() { Either::Left(iter::repeat(NORMAL_Z)) } else { Either::Right(geometry.base.normals.iter().map(|n| [f2i(n.x), f2i(n.y), f2i(n.z), I8Norm(0)])) };
+        // let normal_iter = if geometry.base.normals.is_empty() { Either::Left(iter::repeat(NORMAL_Z)) } else { Either::Right(geometry.base.normals.iter().map(|n| [f2i(n.x), f2i(n.y), f2i(n.z), I8Norm(0)])) };
+        let normal_iter = todo!();
         let uv_iter = if geometry.tex_coords.is_empty() { Either::Left(iter::repeat([0.0, 0.0])) } else { Either::Right(geometry.tex_coords.iter().map(|uv| [uv.x, uv.y])) };
         let tangent_iter = if geometry.base.tangents.is_empty() {
             // TODO: Generate tangents if texture coordinates are provided.
             // (Use mikktspace algorithm or otherwise.)
-            Either::Left(iter::repeat(TANGENT_X))
+            // Either::Left(iter::repeat(TANGENT_X))
+            todo!()
         } else {
             Either::Right(geometry.base.tangents.iter().map(|t| [f2i(t.x), f2i(t.y), f2i(t.z), f2i(t.w)]))
         };
@@ -456,12 +469,15 @@ impl Factory {
     /// Create a new `DynamicMesh` with desired `Geometry` and `Material`.
     pub fn mesh_dynamic<M: Into<Material>>(&mut self, geometry: Geometry, material: M) -> DynamicMesh {
         let slice = {
-            let data: &[u32] = gfx::memory::cast_slice(&geometry.faces);
-            gfx::Slice { start: 0, end: data.len() as u32, base_vertex: 0, instances: Some((1, 0)), buffer: self.backend.create_index_buffer(data) }
+            // let data: &[u32] = gfx::memory::cast_slice(&geometry.faces);
+            let data: &[u32] = todo!();
+            // gfx::Slice { start: 0, end: data.len() as u32, base_vertex: 0, instances: Some((1, 0)), buffer: self.backend.create_index_buffer(data) }
+            todo!()
         };
         let (num_vertices, vertices, upload_buf) = {
             let data = Self::mesh_vertices(&geometry);
-            let dest_buf = self.backend.create_buffer_immutable(&data, gfx::buffer::Role::Vertex, gfx::memory::Bind::TRANSFER_DST).unwrap();
+            // let dest_buf = self.backend.create_buffer_immutable(&data, gfx::buffer::Role::Vertex, gfx::memory::Bind::TRANSFER_DST).unwrap();
+            let dest_buf = todo!();
             let upload_buf = self.backend.create_upload_buffer(data.len()).unwrap();
             // TODO: Workaround for not having a 'write-to-slice' capability.
             // Reason: The renderer copies the entire staging buffer upon updates.
@@ -503,7 +519,8 @@ impl Factory {
     /// Create new sprite from `Material`.
     pub fn sprite(&mut self, material: material::Sprite) -> Sprite {
         let instances = self.create_instance_buffer();
-        let mut slice = gfx::Slice::new_match_vertex_buffer(&self.quad_buf);
+        // let mut slice = gfx::Slice::new_match_vertex_buffer(&self.quad_buf);
+        let mut slice = todo!();
         slice.instances = Some((1, 0));
         let material = Material::from(material);
         Sprite::new(self.hub.lock().unwrap().spawn_visual(material, GpuData { slice, vertices: self.quad_buf.clone(), instances, displacements: None, pending: None, instance_cache_key: None, displacement_contributions: ZEROED_DISPLACEMENT_CONTRIBUTION.to_vec() }, None))
@@ -551,8 +568,9 @@ impl Factory {
 
     /// Create new `Sampler`.
     pub fn sampler(&mut self, filter_method: FilterMethod, horizontal_wrap_mode: WrapMode, vertical_wrap_mode: WrapMode) -> Sampler {
-        use gfx::texture::Lod;
-        let info = gfx::texture::SamplerInfo { filter: filter_method, wrap_mode: (horizontal_wrap_mode, vertical_wrap_mode, WrapMode::Clamp), lod_bias: Lod::from(0.0), lod_range: (Lod::from(-8000.0), Lod::from(8000.0)), comparison: None, border: gfx::texture::PackedColor(0) };
+        // use gfx::texture::Lod;
+        // let info = gfx::texture::SamplerInfo { filter: filter_method, wrap_mode: (horizontal_wrap_mode, vertical_wrap_mode, WrapMode::Clamp), lod_bias: Lod::from(0.0), lod_range: (Lod::from(-8000.0), Lod::from(8000.0)), comparison: None, border: gfx::texture::PackedColor(0) };
+        let info = todo!();
         let inner = self.backend.create_sampler(info);
         Sampler(inner)
     }
@@ -564,12 +582,13 @@ impl Factory {
     }
 
     /// Create a basic mesh pipeline using a custom shader.
-    pub fn basic_pipeline<P: AsRef<Path>>(&mut self, dir: P, name: &str, primitive: gfx::Primitive, rasterizer: gfx::state::Rasterizer, color_mask: gfx::state::ColorMask, blend_state: gfx::state::Blend, depth_state: gfx::state::Depth, stencil_state: gfx::state::Stencil) -> Result<BasicPipelineState, PipelineCreationError> {
-        let vs = Source::user(&dir, name, "vs")?;
-        let ps = Source::user(&dir, name, "ps")?;
-        let shaders = self.backend.create_shader_set(vs.0.as_bytes(), ps.0.as_bytes())?;
-        let init = basic_pipe::Init { out_color: ("Target0", color_mask, blend_state), out_depth: (depth_state, stencil_state), ..basic_pipe::new() };
-        let pso = self.backend.create_pipeline_state(&shaders, primitive, rasterizer, init)?;
+    pub fn basic_pipeline<P: AsRef<Path>>() -> Result<BasicPipelineState, PipelineCreationError> {
+    // pub fn basic_pipeline<P: AsRef<Path>>(&mut self, dir: P, name: &str, primitive: gfx::Primitive, rasterizer: gfx::state::Rasterizer, color_mask: gfx::state::ColorMask, blend_state: gfx::state::Blend, depth_state: gfx::state::Depth, stencil_state: gfx::state::Stencil) -> Result<BasicPipelineState, PipelineCreationError> {
+    //     let vs = Source::user(&dir, name, "vs")?;
+    //     let ps = Source::user(&dir, name, "ps")?;
+    //     let shaders = self.backend.create_shader_set(vs.0.as_bytes(), ps.0.as_bytes())?;
+    //     let init = basic_pipe::Init { out_color: ("Target0", color_mask, blend_state), out_depth: (depth_state, stencil_state), ..basic_pipe::new() };
+    //     let pso = self.backend.create_pipeline_state(&shaders, primitive, rasterizer, init)?;
         Ok(pso)
     }
 
@@ -580,13 +599,13 @@ impl Factory {
         Text::with_object(object)
     }
 
-    #[cfg(feature = "audio")]
-    /// Create new audio source.
-    pub fn audio_source(&mut self) -> audio::Source {
-        let sub = SubNode::Audio(audio::AudioData::new());
-        let object = self.hub.lock().unwrap().spawn(sub);
-        audio::Source::with_object(object)
-    }
+    // #[cfg(feature = "audio")]
+    // /// Create new audio source.
+    // pub fn audio_source(&mut self) -> audio::Source {
+    //     let sub = SubNode::Audio(audio::AudioData::new());
+    //     let object = self.hub.lock().unwrap().spawn(sub);
+    //     audio::Source::with_object(object)
+    // }
 
     /// Map vertices for updating their data.
     pub fn map_vertices<'a>(&'a mut self, mesh: &'a mut DynamicMesh) -> MapVertices<'a> {
@@ -649,19 +668,21 @@ impl Factory {
     }
 
     fn load_texture_impl(path: &Path, sampler: Sampler, factory: &mut BackendFactory) -> Texture<[f32; 4]> {
-        use gfx::texture as t;
+        // use gfx::texture as t;
         //TODO: generate mipmaps
         let format = Factory::parse_texture_format(path);
         let file = fs::File::open(path).unwrap_or_else(|e| panic!("Unable to open {}: {:?}", path.display(), e));
         let img = image::load(io::BufReader::new(file), format).unwrap_or_else(|e| panic!("Unable to decode {}: {:?}", path.display(), e)).flipv().to_rgba();
         let (width, height) = img.dimensions();
-        let kind = t::Kind::D2(width as t::Size, height as t::Size, t::AaMode::Single);
-        let (_, view) = factory.create_texture_immutable_u8::<gfx::format::Srgba8>(kind, t::Mipmap::Provided, &[&img]).unwrap_or_else(|e| panic!("Unable to create GPU texture for {}: {:?}", path.display(), e));
+        // let kind = t::Kind::D2(width as t::Size, height as t::Size, t::AaMode::Single);
+        let kind = todo!();
+        // let (_, view) = factory.create_texture_immutable_u8::<gfx::format::Srgba8>(kind, t::Mipmap::Provided, &[&img]).unwrap_or_else(|e| panic!("Unable to create GPU texture for {}: {:?}", path.display(), e));
+        let (_, view) = todo!();
         Texture::new(view, sampler.0, [width, height])
     }
 
     fn load_cubemap_impl<P: AsRef<Path>>(paths: &CubeMapPath<P>, sampler: Sampler, factory: &mut BackendFactory) -> CubeMap<[f32; 4]> {
-        use gfx::texture as t;
+        // use gfx::texture as t;
         let images = paths
             .as_array()
             .iter()
@@ -673,10 +694,12 @@ impl Factory {
             .collect::<Vec<_>>();
         let data: [&[u8]; 6] = [&images[0], &images[1], &images[2], &images[3], &images[4], &images[5]];
         let size = images[0].dimensions().0;
-        let kind = t::Kind::Cube(size as t::Size);
-        let (_, view) = factory.create_texture_immutable_u8::<gfx::format::Srgba8>(kind, t::Mipmap::Provided, &data).unwrap_or_else(|e| {
-            panic!("Unable to create GPU texture for cubemap: {:?}", e);
-        });
+        // let kind = t::Kind::Cube(size as t::Size);
+        let kind = todo!();
+        // let (_, view) = factory.create_texture_immutable_u8::<gfx::format::Srgba8>(kind, t::Mipmap::Provided, &data).unwrap_or_else(|e| {
+        //     panic!("Unable to create GPU texture for cubemap: {:?}", e);
+        // });
+        let (_, view) = todo!();
         CubeMap::new(view, sampler.0)
     }
 
@@ -713,11 +736,13 @@ impl Factory {
 
     /// Load texture from pre-loaded data.
     pub fn load_texture_from_memory(&mut self, width: u16, height: u16, pixels: &[u8], sampler: Sampler) -> Texture<[f32; 4]> {
-        use gfx::texture as t;
-        let kind = t::Kind::D2(width, height, t::AaMode::Single);
-        let (_, view) = self.backend.create_texture_immutable_u8::<gfx::format::Srgba8>(kind, t::Mipmap::Provided, &[pixels]).unwrap_or_else(|e| {
-            panic!("Unable to create GPU texture from memory: {:?}", e);
-        });
+        // use gfx::texture as t;
+        // let kind = t::Kind::D2(width, height, t::AaMode::Single);
+        let kind = todo!();
+        // let (_, view) = self.backend.create_texture_immutable_u8::<gfx::format::Srgba8>(kind, t::Mipmap::Provided, &[pixels]).unwrap_or_else(|e| {
+        //     panic!("Unable to create GPU texture from memory: {:?}", e);
+        // });
+        let (_, view) = todo!();
         Texture::new(view, sampler.0, [width as u32, height as u32])
     }
 
@@ -763,7 +788,8 @@ impl Factory {
                 let (mut num_normals, mut num_uvs) = (0, 0);
                 {
                     // separate scope for LruIndexer
-                    let f2i = |x: f32| I8Norm(cmp::min(cmp::max((x * 127.) as isize, -128), 127) as i8);
+                    // let f2i = |x: f32| I8Norm(cmp::min(cmp::max((x * 127.) as isize, -128), 127) as i8);
+                    let f2i = todo!();
                     vertices.clear();
                     let mut lru = LruIndexer::new(10, |_, obj::IndexTuple(ipos, iuv, inor)| {
                         let p: [f32; 3] = obj.data.position[ipos];
@@ -780,9 +806,11 @@ impl Factory {
                                 Some(id) => {
                                     num_normals += 1;
                                     let n: [f32; 3] = obj.data.normal[id];
-                                    [f2i(n[0]), f2i(n[1]), f2i(n[2]), I8Norm(0)]
+                                    // [f2i(n[0]), f2i(n[1]), f2i(n[2]), I8Norm(0)]
+                                    todo!()
                                 }
-                                None => [I8Norm(0), I8Norm(0), I8Norm(0x7f), I8Norm(0)],
+                                // None => [I8Norm(0), I8Norm(0), I8Norm(0x7f), I8Norm(0)],
+                                None => todo!(),
                             },
                             ..DEFAULT_VERTEX
                         });
@@ -801,7 +829,8 @@ impl Factory {
 
                 let (vertices, mut slice) = self.backend.create_vertex_buffer_with_slice(&vertices, &indices[..]);
                 slice.instances = Some((1, 0));
-                let instances = self.backend.create_buffer(1, gfx::buffer::Role::Vertex, gfx::memory::Usage::Dynamic, gfx::memory::Bind::TRANSFER_DST).unwrap();
+                // let instances = self.backend.create_buffer(1, gfx::buffer::Role::Vertex, gfx::memory::Usage::Dynamic, gfx::memory::Bind::TRANSFER_DST).unwrap();
+                let instances = todo!();
                 let mesh = Mesh { object: hub.spawn_visual(material, GpuData { slice, vertices, instances, displacements: None, pending: None, instance_cache_key: None, displacement_contributions: ZEROED_DISPLACEMENT_CONTRIBUTION.to_vec() }, None) };
                 group.add(&mesh);
                 meshes.push(mesh);
@@ -813,14 +842,14 @@ impl Factory {
         (groups, meshes)
     }
 
-    #[cfg(feature = "audio")]
-    /// Load audio from file. Supported formats are Flac, Vorbis and WAV.
-    pub fn load_audio<P: AsRef<Path>>(&self, path: P) -> audio::Clip {
-        let mut buffer = Vec::new();
-        let mut file = fs::File::open(&path).expect(&format!("Can't open audio file:\nFile: {}", path.as_ref().display()));
-        file.read_to_end(&mut buffer).expect(&format!("Can't read audio file:\nFile: {}", path.as_ref().display()));
-        audio::Clip::new(buffer)
-    }
+    // #[cfg(feature = "audio")]
+    // /// Load audio from file. Supported formats are Flac, Vorbis and WAV.
+    // pub fn load_audio<P: AsRef<Path>>(&self, path: P) -> audio::Clip {
+    //     let mut buffer = Vec::new();
+    //     let mut file = fs::File::open(&path).expect(&format!("Can't open audio file:\nFile: {}", path.as_ref().display()));
+    //     file.read_to_end(&mut buffer).expect(&format!("Can't read audio file:\nFile: {}", path.as_ref().display()));
+    //     audio::Clip::new(buffer)
+    // }
 }
 
 fn concat_path<'a>(base: Option<&Path>, name: &'a str) -> Cow<'a, Path> {

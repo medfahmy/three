@@ -1,23 +1,25 @@
 use std::path::Path;
 
-use gfx::handle as h;
-use mint;
+// use gfx::handle as h;
 
-use render::BackendResources;
-use util;
+use crate::util;
 
-pub use gfx::texture::{FilterMethod, WrapMode};
+use derivative::Derivative;
+
+// pub use gfx::texture::{FilterMethod, WrapMode};
+
+pub use wgpu::{AddressMode, FilterMode};
 
 /// The sampling properties for a `Texture`.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct Sampler(pub h::Sampler<BackendResources>);
+pub struct Sampler(pub wgpu::Sampler);
 
 /// An image applied (mapped) to the surface of a shape or polygon.
 #[derive(Derivative)]
-#[derivative(Clone, Debug, PartialEq, Eq(bound = "T: PartialEq"), Hash(bound = ""))]
-pub struct Texture<T> {
-    view: h::ShaderResourceView<BackendResources, T>,
-    sampler: h::Sampler<BackendResources>,
+#[derivative(Clone, Debug, PartialEq, Eq, Hash)]
+pub struct Texture {
+    view: wgpu::TextureView,
+    sampler: wgpu::Sampler,
     total_size: [u32; 2],
     #[derivative(Hash(hash_with = "util::hash_f32_slice"))]
     tex0: [f32; 2],
@@ -25,12 +27,12 @@ pub struct Texture<T> {
     tex1: [f32; 2],
 }
 
-impl<T> Texture<T> {
-    pub(crate) fn new(view: h::ShaderResourceView<BackendResources, T>, sampler: h::Sampler<BackendResources>, total_size: [u32; 2]) -> Self {
+impl Texture {
+    pub(crate) fn new(view: wgpu::TextureView, sampler: wgpu::Sampler, total_size: [u32; 2]) -> Self {
         Texture { view, sampler, total_size, tex0: [0.0; 2], tex1: [total_size[0] as f32, total_size[1] as f32] }
     }
 
-    pub(crate) fn to_param(&self) -> (h::ShaderResourceView<BackendResources, T>, h::Sampler<BackendResources>) {
+    pub(crate) fn to_param(&self) -> (wgpu::TextureView, wgpu::Sampler) {
         (self.view.clone(), self.sampler.clone())
     }
 
@@ -73,17 +75,17 @@ impl<P: AsRef<Path>> CubeMapPath<P> {
 /// Cubemap is six textures useful for
 /// [`Cubemapping`](https://en.wikipedia.org/wiki/Cube_mapping).
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
-pub struct CubeMap<T> {
-    view: h::ShaderResourceView<BackendResources, T>,
-    sampler: h::Sampler<BackendResources>,
+pub struct CubeMap {
+    view: wgpu::TextureView,
+    sampler: wgpu::Sampler,
 }
 
-impl<T> CubeMap<T> {
-    pub(crate) fn new(view: h::ShaderResourceView<BackendResources, T>, sampler: h::Sampler<BackendResources>) -> Self {
+impl CubeMap {
+    pub(crate) fn new(view: wgpu::TextureView, sampler: wgpu::Sampler) -> Self {
         CubeMap { view, sampler }
     }
 
-    pub(crate) fn to_param(&self) -> (h::ShaderResourceView<BackendResources, T>, h::Sampler<BackendResources>) {
+    pub(crate) fn to_param(&self) -> (wgpu::TextureView, wgpu::Sampler) {
         (self.view.clone(), self.sampler.clone())
     }
 }

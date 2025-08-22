@@ -1,4 +1,4 @@
-use three::{camera::Camera, Object};
+use three::{Object, camera::Camera};
 
 fn main() {
     let mut win = three::Window::new("Three-rs glTF example");

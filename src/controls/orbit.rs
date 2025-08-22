@@ -1,11 +1,12 @@
 use cgmath::{Decomposed, Point3, Quaternion, Rad, Vector3};
 use cgmath::{EuclideanSpace, InnerSpace, Rotation, Rotation3, Transform as Transform_};
-use mint;
-use object;
+use cgmath::One;
 
-use input::{Button, Input, MOUSE_LEFT};
-use node::TransformInternal;
-use object::Object;
+use crate::{
+    input::{Button, Input, MOUSE_LEFT},
+    node::TransformInternal,
+    object::{Object, Base},
+};
 
 /// Simple controls for Orbital Camera.
 ///
@@ -14,7 +15,7 @@ use object::Object;
 /// to adjust distance to the central point.
 #[derive(Clone, Debug)]
 pub struct Orbit {
-    object: object::Base,
+    object: Base,
     transform: TransformInternal,
     initial_transform: TransformInternal,
     target: Point3<f32>,
@@ -25,7 +26,7 @@ pub struct Orbit {
 /// Helper struct to construct [`Orbit`](struct.Orbit.html) with desired settings.
 #[derive(Clone, Debug)]
 pub struct Builder {
-    object: object::Base,
+    object: Base,
     position: mint::Point3<f32>,
     up: mint::Vector3<f32>,
     target: mint::Point3<f32>,

@@ -2,7 +2,6 @@
 
 use genmesh::generators::{self, IndexedPolygon, SharedVertex};
 use genmesh::{EmitTriangles, Triangulate, Vertex as GenVertex};
-use mint;
 
 /// A collection of vertices, their normals, and faces that defines the
 /// shape of a polyhedral object.
@@ -103,7 +102,8 @@ impl Geometry {
         Geometry { base: Shape { vertices, ..Shape::default() }, ..Geometry::default() }
     }
 
-    fn generate<P, G, Fpos, Fnor>(gen: G, fpos: Fpos, fnor: Fnor) -> Self
+    // @TODO: figure out better name for `gen`
+    fn generate<P, G, Fpos, Fnor>(r#gen: G, fpos: Fpos, fnor: Fnor) -> Self
     where
         P: EmitTriangles<Vertex = usize>,
         G: IndexedPolygon<P> + SharedVertex<GenVertex>,
@@ -111,9 +111,9 @@ impl Geometry {
         Fnor: Fn(GenVertex) -> mint::Vector3<f32>,
     {
         Geometry {
-            base: Shape { vertices: gen.shared_vertex_iter().map(fpos).collect(), normals: gen.shared_vertex_iter().map(fnor).collect(), ..Shape::default() },
+            base: Shape { vertices: r#gen.shared_vertex_iter().map(fpos).collect(), normals: r#gen.shared_vertex_iter().map(fnor).collect(), ..Shape::default() },
             // TODO: Add similar functions for tangents and texture coords
-            faces: gen.indexed_polygon_iter().triangulate().map(|t| [t.x as u32, t.y as u32, t.z as u32]).collect(),
+            faces: r#gen.indexed_polygon_iter().triangulate().map(|t| [t.x as u32, t.y as u32, t.z as u32]).collect(),
             ..Geometry::default()
         }
     }

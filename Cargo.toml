@@ -28,16 +28,16 @@ bitflags = "2"
 cgmath = { version = "0.18", features = ["mint"] }
 derivative = "2.2"
 froggy = "0.4.4"
-genmesh = "0.6"
-gltf = { features = ["names", "utils", "import"], optional = true, version = "1.4.1" }
+# genmesh = "0.6"
+# gltf = { features = ["names", "utils", "import"], optional = true, version = "1.4.1" }
 image = "0.25"
 includedir = "0.6"
 itertools = "0.14"
 log = "0.4"
-obj = { version = "0.10", features = ["genmesh"] }
+# obj = { version = "0.10", features = ["genmesh"] }
 phf = "0.12.1"
 quick-error = "2.0"
-rodio = { version = "0.21", optional = true }
+# rodio = { version = "0.21", optional = true }
 mint = "0.5"
 vec_map = "0.8"
 stlv = "0.1.3"
@@ -49,58 +49,58 @@ env_logger = "0.11"
 notify = "8"
 rand = "0.9"
 
-[[example]]
-name = "lights"
-
-[[example]]
-name = "materials"
-
-[[example]]
-name = "mesh-update"
-
-[[example]]
-name = "obj"
-
-[[example]]
-name = "reload"
-
-[[example]]
-name = "shapes"
-
-[[example]]
-name = "sprite"
-
-[[example]]
-name = "tutorial"
-
-[[example]]
-name = "group"
-
-[[example]]
-name = "anim"
-
-[[example]]
-name = "text"
-
-[[example]]
-name = "stl"
-
-[[example]]
-name = "aviator"
-path = "examples/aviator/main.rs"
-
-[[example]]
-name = "gltf-pbr-shader"
-required-features = ["gltf"]
-
-[[example]]
-name = "gltf-node-animation"
-required-features = ["gltf"]
-
-[[example]]
-name = "gltf-vertex-skinning"
-required-features = ["gltf"]
-
-[[example]]
-name = "gltf-morph-targets"
-required-features = ["gltf"]
+# [[example]]
+# name = "lights"
+#
+# [[example]]
+# name = "materials"
+#
+# [[example]]
+# name = "mesh-update"
+#
+# [[example]]
+# name = "obj"
+#
+# [[example]]
+# name = "reload"
+#
+# [[example]]
+# name = "shapes"
+#
+# [[example]]
+# name = "sprite"
+#
+# [[example]]
+# name = "tutorial"
+#
+# [[example]]
+# name = "group"
+#
+# [[example]]
+# name = "anim"
+#
+# [[example]]
+# name = "text"
+#
+# [[example]]
+# name = "stl"
+#
+# [[example]]
+# name = "aviator"
+# path = "examples/aviator/main.rs"
+#
+# [[example]]
+# name = "gltf-pbr-shader"
+# required-features = ["gltf"]
+#
+# [[example]]
+# name = "gltf-node-animation"
+# required-features = ["gltf"]
+#
+# [[example]]
+# name = "gltf-vertex-skinning"
+# required-features = ["gltf"]
+#
+# [[example]]
+# name = "gltf-morph-targets"
+# required-features = ["gltf"]

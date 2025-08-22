@@ -1,9 +1,11 @@
-use geometry::Geometry;
-use hub::Operation;
-use material::Material;
-use object::{self, DowncastObject, ObjectType};
-use render::DynamicData;
-use skeleton::Skeleton;
+use crate::{
+    geometry::Geometry,
+    hub::Operation,
+    material::Material,
+    object::{self, DowncastObject, ObjectType},
+    render::DynamicData,
+    skeleton::Skeleton,
+};
 
 use std::hash::{Hash, Hasher};
 

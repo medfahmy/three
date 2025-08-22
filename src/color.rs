@@ -39,11 +39,7 @@ pub const WHITE: Color = RED | BLUE | GREEN;
 pub fn to_linear_rgb(c: Color) -> [f32; 3] {
     let f = |xu: u32| {
         let x = (xu & 0xFF) as f32 / 255.0;
-        if x > 0.04045 {
-            ((x + 0.055) / 1.055).powf(2.4)
-        } else {
-            x / 12.92
-        }
+        if x > 0.04045 { ((x + 0.055) / 1.055).powf(2.4) } else { x / 12.92 }
     };
     [f(c >> 16), f(c >> 8), f(c)]
 }

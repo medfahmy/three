@@ -1,13 +1,13 @@
-//! Source for for GLSL shaders used by the renderer.
+//! Source for for WGSL shaders used by the renderer.
 
-use data;
-use util;
+use crate::data;
+use crate::util;
 
 use std::borrow::Borrow;
 use std::path::Path;
 use std::{io, ops, str};
 
-/// Source code for a single GLSL shader.
+/// Source code for a single WGSL shader.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub struct Source(pub(crate) String);
 

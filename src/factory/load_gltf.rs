@@ -5,16 +5,17 @@
 //! * The order of function declarations matches the order of usage.
 //! * The entry point is `Factory::load_gltf`, at the end of the file.
 
-use animation;
-use color;
-use geometry;
-use gltf;
-use material;
-use mint;
 use std::collections::HashMap;
-
-use camera::{Orthographic, Perspective, Projection};
 use std::path::Path;
+
+use crate::{
+    animation,
+    color,
+    geometry,
+    material,
+    camera::{Orthographic, Perspective, Projection},
+};
+
 
 use super::Factory;
 use geometry::{Geometry, Shape};

@@ -1,11 +1,11 @@
 //! Material parameters for mesh rendering.
 
-use color;
 
-use color::Color;
-use render::BasicPipelineState;
-use texture::Texture;
-use util;
+use crate::{
+    color::Color,
+    render::BasicPipelineState,
+    texture::Texture,
+};
 
 #[doc(inline)]
 pub use self::basic::Basic;

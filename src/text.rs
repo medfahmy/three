@@ -2,11 +2,12 @@ use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
 
-use gfx::handle::{DepthStencilView, RenderTargetView};
-use gfx::Encoder;
-use gfx_glyph as g;
-use mint;
-use object;
+// use gfx::handle::{DepthStencilView, RenderTargetView};
+// use gfx::Encoder;
+// use gfx_glyph as g;
+// use mint;
+
+use crate::object;
 
 use color::Color;
 use hub::Operation as HubOperation;

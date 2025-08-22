@@ -1,5 +1,4 @@
 #![allow(warnings, unused)]
-
 #![warn(missing_docs)]
 //! Three.js inspired 3D engine.
 //!
@@ -238,59 +237,73 @@
 #[macro_use]
 mod macros;
 
-pub mod color;
-#[doc(inline)]
-pub use color::Color;
+mod util;
+mod input;
+mod texture;
 
-pub mod camera;
-
+pub mod app;
 pub mod animation;
+pub mod color;
+pub mod camera;
+pub mod custom;
+pub mod geometry;
 
+pub mod prelude {
+    pub use crate::{
+        app::App,
+        color::Color,
+        geometry::{Geometry, Joints, Shape},
+        texture::{AddressMode, CubeMap, CubeMapPath, FilterMode, Sampler, Texture},
+    };
+}
+
+
+// pub mod controls;
+// #[doc(inline)]
+// pub use controls::{AXIS_DOWN_UP, AXIS_LEFT_RIGHT, KEY_ESCAPE, KEY_SPACE, MOUSE_LEFT, MOUSE_RIGHT};
+// #[doc(inline)]
+// pub use controls::{Button, Input, MouseButton, Timer};
+//
+// pub mod object;
+// #[doc(inline)]
+// pub use object::{Group, Object};
+//
+// mod node;
+//
 // mod hub;
+//
+// pub mod material;
+//
+// pub mod render;
+//
+// mod factory;
+//
+// mod data;
 
 // #[cfg(feature = "audio")]
 // pub mod audio;
 
-// pub mod controls;
-// pub mod custom;
-// mod data;
-// mod factory;
-// mod geometry;
-// mod input;
 // pub mod light;
-// pub mod material;
 // mod mesh;
-// mod node;
-// pub mod object;
-// pub mod render;
 // pub mod scene;
 // pub mod skeleton;
 // mod sprite;
 // pub mod template;
 // mod text;
-// mod texture;
-// mod util;
-// pub mod window;
+
+
 
 // #[doc(inline)]
-// pub use controls::{AXIS_DOWN_UP, AXIS_LEFT_RIGHT, KEY_ESCAPE, KEY_SPACE, MOUSE_LEFT, MOUSE_RIGHT};
-//
-// #[doc(inline)]
-// pub use controls::{Button, Input, MouseButton, Timer};
-//
-// #[doc(inline)]
 // pub use factory::Factory;
-//
-// #[doc(inline)]
-// pub use geometry::{Geometry, Joints, Shape};
-//
+
+
 // #[cfg(feature = "opengl")]
 // #[doc(inline)]
 // pub use glutin::VirtualKeyCode as Key;
-//
-// //#[doc(inline)]
-// //pub use group::Group;
-//
+
+//#[doc(inline)]
+//pub use group::Group;
+
 // #[doc(inline)]
 // pub use material::Material;
 //
@@ -300,8 +313,6 @@ pub mod animation;
 // #[doc(inline)]
 // pub use node::{Local, Node, Transform, World};
 //
-// #[doc(inline)]
-// pub use object::{Group, Object};
 //
 // #[doc(inline)]
 // pub use render::Renderer;
@@ -315,8 +326,6 @@ pub mod animation;
 // #[doc(inline)]
 // pub use text::{Align, Font, Layout, Text};
 //
-// #[doc(inline)]
-// pub use texture::{CubeMap, CubeMapPath, FilterMethod, Sampler, Texture, WrapMode};
 //
 // #[doc(inline)]
 // pub use window::Window;

@@ -68,13 +68,15 @@
 //! [`objects`]: ./struct.Template.html#structfield.objects
 //! [`InstancedGeometry`]: ./struct.InstancedGeometry.html
 
-use animation::Track;
-use camera::Projection;
-use color::Color;
-use material::Material;
-use node::Transform;
-use render::GpuData;
-use skeleton::InverseBindMatrix;
+use crate::{
+    animation::Track,
+    camera::Projection,
+    color::Color,
+    material::Material,
+    node::Transform,
+    render::GpuData,
+    skeleton::InverseBindMatrix,
+};
 
 /// A template representing a hierarchy of objects.
 ///

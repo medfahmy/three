@@ -12,7 +12,7 @@ use crate::{
     mesh::DynamicMesh,
     node::{NodeInternal, NodePointer, TransformInternal},
     object::Base,
-    render::{BackendResources, GpuData},
+    render::{GpuData},
     skeleton::{Bone, Skeleton},
     text::{Operation as TextOperation, TextData},
 };
@@ -35,12 +35,12 @@ pub(crate) struct LightData {
     pub shadow: Option<(ShadowMap, ShadowProjection)>,
 }
 
-// #[derive(Clone, Debug)]
-// pub(crate) struct SkeletonData {
-//     pub bones: Vec<Bone>,
-//     pub gpu_buffer_view: gfx::handle::ShaderResourceView<BackendResources, [f32; 4]>,
-//     pub gpu_buffer: gfx::handle::Buffer<BackendResources, [f32; 4]>,
-// }
+#[derive(Clone, Debug)]
+pub(crate) struct SkeletonData {
+    pub bones: Vec<Bone>,
+    pub gpu_buffer_view: BufferView,
+    pub gpu_buffer: Buffer,
+}
 
 #[derive(Clone, Debug)]
 pub(crate) struct VisualData {

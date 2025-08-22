@@ -1,5 +1,6 @@
-use input::TimerDuration;
 use std::time;
+
+use super::TimerDuration;
 
 /// Timer can be used to find the time difference between the moment of timer creation and the
 /// moment of calling [`elapsed`](struct.Timer.html#method.get).

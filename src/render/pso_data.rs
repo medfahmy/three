@@ -1,9 +1,11 @@
-use color;
-use gfx::handle as h;
-use material::Material;
-use render::{BackendResources, PbrParams};
 use std::mem;
-use texture::Texture;
+
+use crate::{
+    color,
+    material::Material,
+    render::{BackendResources, PbrParams},
+    texture::Texture,
+};
 
 type MapParam = (h::ShaderResourceView<BackendResources, [f32; 4]>, h::Sampler<BackendResources>);
 

@@ -1,10 +1,12 @@
 //! `Scene` and `SyncGuard` structures.
 
-use color::Color;
-use hub::{Hub, HubPtr, SubNode};
-use node;
-use object::{Base, DowncastObject, Group, Object};
-use texture::{CubeMap, Texture};
+use crate::{
+    color::Color,
+    hub::{Hub, HubPtr, SubNode},
+    node,
+    object::{Base, DowncastObject, Group, Object},
+    texture::{CubeMap, Texture},
+};
 
 use std::marker::PhantomData;
 use std::mem;
