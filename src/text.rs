@@ -2,8 +2,8 @@ use std::cell::RefCell;
 use std::fmt;
 use std::rc::Rc;
 
-use gfx::Encoder;
 use gfx::handle::{DepthStencilView, RenderTargetView};
+use gfx::Encoder;
 use gfx_glyph as g;
 use mint;
 use object;
@@ -69,16 +69,8 @@ impl From<Align> for g::HorizontalAlign {
 impl From<Layout> for g::Layout<g::BuiltInLineBreaker> {
     fn from(layout: Layout) -> g::Layout<g::BuiltInLineBreaker> {
         match layout {
-            Layout::Wrap(a) => g::Layout::Wrap {
-                line_breaker: g::BuiltInLineBreaker::UnicodeLineBreaker,
-                h_align: a.into(),
-                v_align: g::VerticalAlign::Top,
-            },
-            Layout::SingleLine(a) => g::Layout::SingleLine {
-                line_breaker: g::BuiltInLineBreaker::UnicodeLineBreaker,
-                h_align: a.into(),
-                v_align: g::VerticalAlign::Top,
-            },
+            Layout::Wrap(a) => g::Layout::Wrap { line_breaker: g::BuiltInLineBreaker::UnicodeLineBreaker, h_align: a.into(), v_align: g::VerticalAlign::Top },
+            Layout::SingleLine(a) => g::Layout::SingleLine { line_breaker: g::BuiltInLineBreaker::UnicodeLineBreaker, h_align: a.into(), v_align: g::VerticalAlign::Top },
         }
     }
 }
@@ -91,45 +83,23 @@ pub struct Font {
 }
 
 impl Font {
-    pub(crate) fn new<T: Into<g::SharedBytes<'static>>>(
-        buf: T,
-        id: String,
-        factory: BackendFactory,
-    ) -> Font {
-        Font {
-            brush: Rc::new(RefCell::new(
-                g::GlyphBrushBuilder::using_font_bytes(buf).build(factory),
-            )),
-            id: id,
-        }
+    pub(crate) fn new<T: Into<g::SharedBytes<'static>>>(buf: T, id: String, factory: BackendFactory) -> Font {
+        Font { brush: Rc::new(RefCell::new(g::GlyphBrushBuilder::using_font_bytes(buf).build(factory))), id: id }
     }
 
-    pub(crate) fn queue(
-        &self,
-        section: &g::OwnedVariedSection,
-    ) {
+    pub(crate) fn queue(&self, section: &g::OwnedVariedSection) {
         let mut brush = self.brush.borrow_mut();
         brush.queue(section);
     }
 
-    pub(crate) fn draw(
-        &self,
-        encoder: &mut Encoder<BackendResources, BackendCommandBuffer>,
-        out: &RenderTargetView<BackendResources, ColorFormat>,
-        depth: &DepthStencilView<BackendResources, DepthFormat>,
-    ) {
+    pub(crate) fn draw(&self, encoder: &mut Encoder<BackendResources, BackendCommandBuffer>, out: &RenderTargetView<BackendResources, ColorFormat>, depth: &DepthStencilView<BackendResources, DepthFormat>) {
         let mut brush = self.brush.borrow_mut();
-        brush
-            .draw_queued(encoder, out, depth)
-            .expect("Error while drawing text");
+        brush.draw_queued(encoder, out, depth).expect("Error while drawing text");
     }
 }
 
 impl fmt::Debug for Font {
-    fn fmt(
-        &self,
-        f: &mut fmt::Formatter,
-    ) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         write!(f, "Font {{ {} }}", self.id)
     }
 }
@@ -141,23 +111,8 @@ pub(crate) struct TextData {
 }
 
 impl TextData {
-    pub(crate) fn new<S: Into<String>>(
-        font: &Font,
-        text: S,
-    ) -> Self {
-        TextData {
-            section: g::OwnedVariedSection {
-                text: vec![
-                    g::OwnedSectionText {
-                        color: [1.0, 1.0, 1.0, 1.0],
-                        text: text.into(),
-                        ..g::OwnedSectionText::default()
-                    },
-                ],
-                ..Default::default()
-            },
-            font: font.clone(),
-        }
+    pub(crate) fn new<S: Into<String>>(font: &Font, text: S) -> Self {
+        TextData { section: g::OwnedVariedSection { text: vec![g::OwnedSectionText { color: [1.0, 1.0, 1.0, 1.0], text: text.into(), ..g::OwnedSectionText::default() }], ..Default::default() }, font: font.clone() }
     }
 }
 
@@ -177,19 +132,13 @@ impl Text {
     }
 
     /// Change text.
-    pub fn set_text<S: Into<String>>(
-        &mut self,
-        text: S,
-    ) {
+    pub fn set_text<S: Into<String>>(&mut self, text: S) {
         let msg = HubOperation::SetText(Operation::Text(text.into()));
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }
 
     /// Change font.
-    pub fn set_font(
-        &mut self,
-        font: &Font,
-    ) {
+    pub fn set_font(&mut self, font: &Font) {
         let msg = HubOperation::SetText(Operation::Font(font.clone()));
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }
@@ -197,30 +146,21 @@ impl Text {
     /// Change text position.
     /// Coordinates in pixels from top-left.
     /// Defaults to (0, 0).
-    pub fn set_pos<P: Into<mint::Point2<f32>>>(
-        &mut self,
-        point: P,
-    ) {
+    pub fn set_pos<P: Into<mint::Point2<f32>>>(&mut self, point: P) {
         let msg = HubOperation::SetText(Operation::Pos(point.into()));
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }
 
     /// Change maximum bounds size, in pixels from top-left.
     /// Defaults to unbound.
-    pub fn set_size<V: Into<mint::Vector2<f32>>>(
-        &mut self,
-        dimensions: V,
-    ) {
+    pub fn set_size<V: Into<mint::Vector2<f32>>>(&mut self, dimensions: V) {
         let msg = HubOperation::SetText(Operation::Size(dimensions.into()));
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }
 
     /// Change text color.
     /// Defaults to white (`0xFFFFFF`).
-    pub fn set_color(
-        &mut self,
-        color: Color,
-    ) {
+    pub fn set_color(&mut self, color: Color) {
         let msg = HubOperation::SetText(Operation::Color(color));
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }
@@ -228,30 +168,21 @@ impl Text {
     /// Change text opacity.
     /// From `0.0` to `1.0`.
     /// Defaults to `1.0`.
-    pub fn set_opacity(
-        &mut self,
-        opacity: f32,
-    ) {
+    pub fn set_opacity(&mut self, opacity: f32) {
         let msg = HubOperation::SetText(Operation::Opacity(opacity));
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }
 
     /// Change font size (scale).
     /// Defaults to 16.
-    pub fn set_font_size(
-        &mut self,
-        size: f32,
-    ) {
+    pub fn set_font_size(&mut self, size: f32) {
         let msg = HubOperation::SetText(Operation::Scale(size));
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }
 
     /// Change text layout.
     /// Defaults to `Layout::SingleLine(Align::Left)`.
-    pub fn set_layout(
-        &mut self,
-        layout: Layout,
-    ) {
+    pub fn set_layout(&mut self, layout: Layout) {
         let msg = HubOperation::SetText(Operation::Layout(layout));
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }

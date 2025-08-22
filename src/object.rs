@@ -69,28 +69,18 @@ pub trait Object: AsRef<Base> {
     }
 
     /// Invisible objects are not rendered by cameras.
-    fn set_visible(
-        &self,
-        visible: bool,
-    ) {
+    fn set_visible(&self, visible: bool) {
         self.as_ref().send(Operation::SetVisible(visible));
     }
 
     /// Sets the name of the object.
-    fn set_name<S: Into<String>>(
-        &self,
-        name: S,
-    ) {
+    fn set_name<S: Into<String>>(&self, name: S) {
         self.as_ref().send(Operation::SetName(name.into()));
     }
 
     /// Set both position, orientation and scale.
-    fn set_transform<P, Q>(
-        &self,
-        pos: P,
-        rot: Q,
-        scale: f32,
-    ) where
+    fn set_transform<P, Q>(&self, pos: P, rot: Q, scale: f32)
+    where
         Self: Sized,
         P: Into<mint::Point3<f32>>,
         Q: Into<mint::Quaternion<f32>>,
@@ -99,10 +89,8 @@ pub trait Object: AsRef<Base> {
     }
 
     /// Set position.
-    fn set_position<P>(
-        &self,
-        pos: P,
-    ) where
+    fn set_position<P>(&self, pos: P)
+    where
         Self: Sized,
         P: Into<mint::Point3<f32>>,
     {
@@ -110,10 +98,8 @@ pub trait Object: AsRef<Base> {
     }
 
     /// Set orientation.
-    fn set_orientation<Q>(
-        &self,
-        rot: Q,
-    ) where
+    fn set_orientation<Q>(&self, rot: Q)
+    where
         Self: Sized,
         Q: Into<mint::Quaternion<f32>>,
     {
@@ -121,29 +107,19 @@ pub trait Object: AsRef<Base> {
     }
 
     /// Set scale.
-    fn set_scale(
-        &self,
-        scale: f32,
-    ) {
+    fn set_scale(&self, scale: f32) {
         self.as_ref().send(Operation::SetTransform(None, None, Some(scale)));
     }
 
     /// Set weights.
     //Note: needed for animations
-    fn set_weights(
-        &self,
-        weights: Vec<f32>,
-    ) {
+    fn set_weights(&self, weights: Vec<f32>) {
         self.as_ref().send(Operation::SetWeights(weights));
     }
 
     /// Rotates object in the specific direction of `target`.
-    fn look_at<E, T>(
-        &self,
-        eye: E,
-        target: T,
-        up: Option<mint::Vector3<f32>>,
-    ) where
+    fn look_at<E, T>(&self, eye: E, target: T, up: Option<mint::Vector3<f32>>)
+    where
         Self: Sized,
         E: Into<mint::Point3<f32>>,
         T: Into<mint::Point3<f32>>,
@@ -164,10 +140,7 @@ pub trait Object: AsRef<Base> {
 }
 
 impl PartialEq for Base {
-    fn eq(
-        &self,
-        other: &Base,
-    ) -> bool {
+    fn eq(&self, other: &Base) -> bool {
         self.node == other.node
     }
 }
@@ -175,28 +148,19 @@ impl PartialEq for Base {
 impl Eq for Base {}
 
 impl Hash for Base {
-    fn hash<H: Hasher>(
-        &self,
-        state: &mut H,
-    ) {
+    fn hash<H: Hasher>(&self, state: &mut H) {
         self.node.hash(state);
     }
 }
 
 impl fmt::Debug for Base {
-    fn fmt(
-        &self,
-        f: &mut fmt::Formatter,
-    ) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.node.fmt(f)
     }
 }
 
 impl Base {
-    pub(crate) fn send(
-        &self,
-        operation: Operation,
-    ) {
+    pub(crate) fn send(&self, operation: Operation) {
         let _ = self.tx.send((self.node.downgrade(), operation));
     }
 }
@@ -213,52 +177,30 @@ impl Object for Base {
 
     fn resolve_data(&self, sync_guard: &SyncGuard) -> Self::Data {
         match &sync_guard.hub[self].sub_node {
-            SubNode::Camera(..) => ObjectType::Camera(Camera {
-                object: self.clone(),
-            }),
+            SubNode::Camera(..) => ObjectType::Camera(Camera { object: self.clone() }),
 
-            SubNode::Group { .. } => ObjectType::Group(Group {
-                object: self.clone(),
-            }),
+            SubNode::Group { .. } => ObjectType::Group(Group { object: self.clone() }),
 
             #[cfg(feature = "audio")]
-            SubNode::Audio(..) => ObjectType::AudioSource(audio::Source {
-                object: self.clone(),
-            }),
+            SubNode::Audio(..) => ObjectType::AudioSource(audio::Source { object: self.clone() }),
 
-            SubNode::UiText(..) => ObjectType::Text(Text {
-                object: self.clone(),
-            }),
+            SubNode::UiText(..) => ObjectType::Text(Text { object: self.clone() }),
 
             // TODO: Differentiate between `Mesh` and `DynamicMesh`.
-            SubNode::Visual(..) => ObjectType::Mesh(Mesh {
-                object: self.clone(),
-            }),
+            SubNode::Visual(..) => ObjectType::Mesh(Mesh { object: self.clone() }),
 
-            SubNode::Bone { .. } => ObjectType::Bone(Bone {
-                object: self.clone(),
-            }),
+            SubNode::Bone { .. } => ObjectType::Bone(Bone { object: self.clone() }),
 
-            SubNode::Skeleton(..) => ObjectType::Skeleton(Skeleton {
-                object: self.clone(),
-            }),
+            SubNode::Skeleton(..) => ObjectType::Skeleton(Skeleton { object: self.clone() }),
 
             SubNode::Light(light) => match light.sub_light {
-                SubLight::Ambient => ObjectType::AmbientLight(light::Ambient {
-                    object: self.clone(),
-                }),
+                SubLight::Ambient => ObjectType::AmbientLight(light::Ambient { object: self.clone() }),
 
-                SubLight::Directional => ObjectType::DirectionalLight(light::Directional {
-                    object: self.clone(),
-                }),
+                SubLight::Directional => ObjectType::DirectionalLight(light::Directional { object: self.clone() }),
 
-                SubLight::Point => ObjectType::PointLight(light::Point {
-                    object: self.clone(),
-                }),
+                SubLight::Point => ObjectType::PointLight(light::Point { object: self.clone() }),
 
-                SubLight::Hemisphere { .. } => ObjectType::HemisphereLight(light::Hemisphere {
-                    object: self.clone(),
-                }),
+                SubLight::Hemisphere { .. } => ObjectType::HemisphereLight(light::Hemisphere { object: self.clone() }),
             },
         }
     }
@@ -335,7 +277,9 @@ pub struct Group {
 }
 
 impl AsRef<Base> for Group {
-    fn as_ref(&self) -> &Base { &self.object }
+    fn as_ref(&self) -> &Base {
+        &self.object
+    }
 }
 
 impl Object for Group {
@@ -351,10 +295,7 @@ impl Object for Group {
         while let Some(child_pointer) = child {
             child = sync_guard.hub.nodes[&child_pointer].next_sibling.clone();
 
-            children.push(Base {
-                node: child_pointer,
-                tx: sync_guard.hub.message_tx.clone(),
-            });
+            children.push(Base { node: child_pointer, tx: sync_guard.hub.message_tx.clone() });
         }
 
         children
@@ -366,25 +307,17 @@ derive_DowncastObject!(Group => ObjectType::Group);
 impl Group {
     pub(crate) fn new(hub: &mut Hub) -> Self {
         let sub = SubNode::Group { first_child: None };
-        Group {
-            object: hub.spawn(sub),
-        }
+        Group { object: hub.spawn(sub) }
     }
 
     /// Add new [`Object`](trait.Object.html) to the group.
-    pub fn add<T: Object>(
-        &self,
-        child: &T,
-    ) {
+    pub fn add<T: Object>(&self, child: &T) {
         let node = child.as_ref().node.clone();
         self.as_ref().send(Operation::AddChild(node));
     }
 
     /// Removes a child [`Object`](trait.Object.html) from the group.
-    pub fn remove<T: Object>(
-        &self,
-        child: &T,
-    ) {
+    pub fn remove<T: Object>(&self, child: &T) {
         let node = child.as_ref().node.clone();
         self.as_ref().send(Operation::RemoveChild(node));
     }

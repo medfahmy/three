@@ -1,6 +1,7 @@
 [package]
 name = "three"
-version = "0.4.0"
+version = "0.5.0"
+edition = "2024"
 authors = ["Three-rs Developers"]
 license = "MIT/Apache-2.0"
 description = "Three.js inspired 3D engine in Rust"
@@ -15,44 +16,38 @@ exclude = ["doc/*", "bors.toml", ".travis.yml", "test_data/*"]
 [lib]
 
 [features]
-default = ["opengl", "audio"]
-opengl = ["gfx_device_gl", "gfx_window_glutin", "glutin"]
+default = ["audio"]
 audio = ["rodio"]
 
 [build-dependencies]
-includedir_codegen = "0.5"
+includedir_codegen = "0.6"
 
 [dependencies]
-arrayvec = "0.4"
-bitflags = "1"
-cgmath = { version = "0.16", features = ["mint"] }
-derivative = "1.0"
+arrayvec = "0.7"
+bitflags = "2"
+cgmath = { version = "0.18", features = ["mint"] }
+derivative = "2.2"
 froggy = "0.4.4"
 genmesh = "0.6"
-gfx = "0.18.1"
-gfx_glyph = "0.15.0"
-gltf = { features = ["names", "utils", "import"], optional = true, version = "0.15.2" }
-image = "0.23"
-includedir = "0.5"
-itertools = "0.8"
+gltf = { features = ["names", "utils", "import"], optional = true, version = "1.4.1" }
+image = "0.25"
+includedir = "0.6"
+itertools = "0.14"
 log = "0.4"
 obj = { version = "0.10", features = ["genmesh"] }
-phf = "0.7.12"
-quick-error = "1.2"
-rodio = { version = "0.8", optional = true }
+phf = "0.12.1"
+quick-error = "2.0"
+rodio = { version = "0.21", optional = true }
 mint = "0.5"
 vec_map = "0.8"
 stlv = "0.1.3"
-
-# OpenGL
-gfx_device_gl = { version = "0.16.2", optional = true }
-gfx_window_glutin = { version = "0.31.0", optional = true }
-glutin = { version = "0.21.1", optional = true }
+winit = "0.30.12"
+wgpu = "26.0.1"
 
 [dev-dependencies]
-env_logger = "0.6"
-notify = "4"
-rand = "0.6"
+env_logger = "0.11"
+notify = "8"
+rand = "0.9"
 
 [[example]]
 name = "lights"

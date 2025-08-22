@@ -1,5 +1,3 @@
-extern crate three;
-
 use three::Object;
 
 fn main() {
@@ -29,11 +27,7 @@ fn main() {
     // Create a camera with which to render the scene, and control it with the built-in
     // orbit controller, set to orbit the model.
     let camera = window.factory.perspective_camera(45.0, 0.1 .. 100.0);
-    let mut controls = three::controls::Orbit::builder(&camera)
-        .position([0.0, 3.0, -1.0])
-        .target([0.0, 0.0, -1.0])
-        .up([0.0, 0.0, -1.0])
-        .build();
+    let mut controls = three::controls::Orbit::builder(&camera).position([0.0, 3.0, -1.0]).target([0.0, 0.0, -1.0]).up([0.0, 0.0, -1.0]).build();
 
     // Run the main loop, updating the camera controller, animations, and rendering the scene
     // every frame.

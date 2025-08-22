@@ -1,3 +1,5 @@
+#![allow(warnings, unused)]
+
 #![warn(missing_docs)]
 //! Three.js inspired 3D engine.
 //!
@@ -8,7 +10,6 @@
 //! Every `three` application begins with a [`Window`]. We create it as follows.
 //!
 //! ```rust,no_run
-//! # extern crate three;
 //! # fn main() {
 //! let title = "Getting started with three-rs";
 //! let mut window = three::Window::new(title);
@@ -32,7 +33,6 @@
 //! [`Material`], describing the appearance of the object.
 //!
 //! ```rust,no_run
-//! # extern crate three;
 //! # fn main() {
 //! # let title = "Getting started with three-rs";
 //! # let mut window = three::Window::new(title);
@@ -56,7 +56,6 @@
 //! may be placed into the scene heirarchy, including user-defined structs.
 //!
 //! ```rust,no_run
-//! # extern crate three;
 //! # fn main() {
 //! # let title = "Getting started with three-rs";
 //! # let mut window = three::Window::new(title);
@@ -80,7 +79,6 @@
 //! sky blue color instead.
 //!
 //! ```rust,no_run
-//! # extern crate three;
 //! # fn main() {
 //! # let title = "Getting started with three-rs";
 //! # let mut window = three::Window::new(title);
@@ -94,7 +92,6 @@
 //! write the main game loop.
 //!
 //! ```rust,no_run
-//! # extern crate three;
 //! # fn main() {
 //! #     let title = "Getting started with three-rs";
 //! #     let mut window = three::Window::new(title);
@@ -126,8 +123,6 @@
 //! upon a sky blue background.
 //!
 //! ```rust,no_run
-//! extern crate three;
-//!
 //! use three::Object;
 //!
 //! fn main() {
@@ -177,8 +172,6 @@
 //!
 //! ```rust,no_run
 //! #[macro_use]
-//! extern crate three;
-//!
 //! use three::Object;
 //!
 //! struct MyObject {
@@ -242,123 +235,88 @@
 //! [`Window`]: window/struct.Window.html
 //! [`three_object`]: macro.three_object.html
 
-extern crate arrayvec;
-#[macro_use]
-extern crate bitflags;
-extern crate cgmath;
-#[macro_use]
-extern crate derivative;
-extern crate froggy;
-extern crate genmesh;
-#[macro_use]
-extern crate gfx;
-extern crate gfx_glyph;
-#[cfg(feature = "gltf")]
-extern crate gltf;
-extern crate image;
-extern crate includedir;
-#[macro_use]
-extern crate itertools;
-#[macro_use]
-extern crate log;
-extern crate mint;
-extern crate obj;
-extern crate phf;
-#[macro_use]
-extern crate quick_error;
-#[cfg(feature = "audio")]
-extern crate rodio;
-extern crate vec_map;
-
-#[cfg(feature = "opengl")]
-extern crate gfx_device_gl;
-#[cfg(feature = "opengl")]
-extern crate gfx_window_glutin;
-#[cfg(feature = "opengl")]
-extern crate glutin;
-
 #[macro_use]
 mod macros;
 
-#[cfg(feature = "audio")]
-pub mod audio;
-
-pub mod animation;
-pub mod camera;
 pub mod color;
-pub mod controls;
-pub mod custom;
-mod data;
-mod factory;
-mod geometry;
-mod hub;
-mod input;
-pub mod light;
-pub mod material;
-mod mesh;
-mod node;
-pub mod object;
-pub mod render;
-pub mod scene;
-pub mod skeleton;
-mod sprite;
-pub mod template;
-mod text;
-mod texture;
-mod util;
-
-#[cfg(feature = "opengl")]
-pub mod window;
-
 #[doc(inline)]
 pub use color::Color;
 
-#[doc(inline)]
-pub use controls::{AXIS_DOWN_UP, AXIS_LEFT_RIGHT, KEY_ESCAPE, KEY_SPACE, MOUSE_LEFT, MOUSE_RIGHT};
+pub mod camera;
 
-#[doc(inline)]
-pub use controls::{Button, MouseButton, Input, Timer};
+pub mod animation;
 
-#[doc(inline)]
-pub use factory::Factory;
+// mod hub;
 
-#[doc(inline)]
-pub use geometry::{Geometry, Joints, Shape};
+// #[cfg(feature = "audio")]
+// pub mod audio;
 
-#[cfg(feature = "opengl")]
-#[doc(inline)]
-pub use glutin::VirtualKeyCode as Key;
+// pub mod controls;
+// pub mod custom;
+// mod data;
+// mod factory;
+// mod geometry;
+// mod input;
+// pub mod light;
+// pub mod material;
+// mod mesh;
+// mod node;
+// pub mod object;
+// pub mod render;
+// pub mod scene;
+// pub mod skeleton;
+// mod sprite;
+// pub mod template;
+// mod text;
+// mod texture;
+// mod util;
+// pub mod window;
 
-//#[doc(inline)]
-//pub use group::Group;
-
-#[doc(inline)]
-pub use material::Material;
-
-#[doc(inline)]
-pub use mesh::{DynamicMesh, Mesh};
-
-#[doc(inline)]
-pub use node::{Node, Transform, Local, World};
-
-#[doc(inline)]
-pub use object::{Group, Object};
-
-#[doc(inline)]
-pub use render::Renderer;
-
-#[doc(inline)]
-pub use scene::{Background, Scene};
-
-#[doc(inline)]
-pub use sprite::Sprite;
-
-#[doc(inline)]
-pub use text::{Align, Font, Layout, Text};
-
-#[doc(inline)]
-pub use texture::{CubeMap, CubeMapPath, FilterMethod, Sampler, Texture, WrapMode};
-
-#[cfg(feature = "opengl")]
-#[doc(inline)]
-pub use window::Window;
+// #[doc(inline)]
+// pub use controls::{AXIS_DOWN_UP, AXIS_LEFT_RIGHT, KEY_ESCAPE, KEY_SPACE, MOUSE_LEFT, MOUSE_RIGHT};
+//
+// #[doc(inline)]
+// pub use controls::{Button, Input, MouseButton, Timer};
+//
+// #[doc(inline)]
+// pub use factory::Factory;
+//
+// #[doc(inline)]
+// pub use geometry::{Geometry, Joints, Shape};
+//
+// #[cfg(feature = "opengl")]
+// #[doc(inline)]
+// pub use glutin::VirtualKeyCode as Key;
+//
+// //#[doc(inline)]
+// //pub use group::Group;
+//
+// #[doc(inline)]
+// pub use material::Material;
+//
+// #[doc(inline)]
+// pub use mesh::{DynamicMesh, Mesh};
+//
+// #[doc(inline)]
+// pub use node::{Local, Node, Transform, World};
+//
+// #[doc(inline)]
+// pub use object::{Group, Object};
+//
+// #[doc(inline)]
+// pub use render::Renderer;
+//
+// #[doc(inline)]
+// pub use scene::{Background, Scene};
+//
+// #[doc(inline)]
+// pub use sprite::Sprite;
+//
+// #[doc(inline)]
+// pub use text::{Align, Font, Layout, Text};
+//
+// #[doc(inline)]
+// pub use texture::{CubeMap, CubeMapPath, FilterMethod, Sampler, Texture, WrapMode};
+//
+// #[doc(inline)]
+// pub use window::Window;

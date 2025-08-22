@@ -19,19 +19,13 @@ pub(crate) enum LightOperation {
 /// Marks light sources and implements their common methods.
 pub trait Light: Object {
     /// Change light color.
-    fn set_color(
-        &self,
-        color: Color,
-    ) {
+    fn set_color(&self, color: Color) {
         let msg = Operation::SetLight(LightOperation::Color(color));
         let _ = self.as_ref().tx.send((self.as_ref().node.downgrade(), msg));
     }
 
     /// Change light intensity.
-    fn set_intensity(
-        &self,
-        intensity: f32,
-    ) {
+    fn set_intensity(&self, intensity: f32) {
         let msg = Operation::SetLight(LightOperation::Intensity(intensity));
         let _ = self.as_ref().tx.send((self.as_ref().node.downgrade(), msg));
     }
@@ -79,7 +73,9 @@ impl Ambient {
 }
 
 impl AsRef<Base> for Ambient {
-    fn as_ref(&self) -> &Base { &self.object }
+    fn as_ref(&self) -> &Base {
+        &self.object
+    }
 }
 
 impl Object for Ambient {
@@ -105,30 +101,21 @@ pub struct Directional {
 
 impl Directional {
     pub(crate) fn new(object: Base) -> Self {
-        Directional {
-            object,
-        }
+        Directional { object }
     }
 
     /// Adds or updates the shadow map for this light source.
-    pub fn set_shadow(
-        &mut self,
-        map: ShadowMap,
-        extent_y: f32,
-        range: ops::Range<f32>,
-    ) {
-        let sp = ShadowProjection::Orthographic(Orthographic {
-            center: [0.0; 2].into(),
-            extent_y,
-            range,
-        });
+    pub fn set_shadow(&mut self, map: ShadowMap, extent_y: f32, range: ops::Range<f32>) {
+        let sp = ShadowProjection::Orthographic(Orthographic { center: [0.0; 2].into(), extent_y, range });
         let msg = Operation::SetShadow(map, sp);
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }
 }
 
 impl AsRef<Base> for Directional {
-    fn as_ref(&self) -> &Base { &self.object }
+    fn as_ref(&self) -> &Base {
+        &self.object
+    }
 }
 
 impl Object for Directional {
@@ -165,7 +152,9 @@ impl Hemisphere {
 }
 
 impl AsRef<Base> for Hemisphere {
-    fn as_ref(&self) -> &Base { &self.object }
+    fn as_ref(&self) -> &Base {
+        &self.object
+    }
 }
 
 impl Object for Hemisphere {
@@ -194,7 +183,9 @@ impl Point {
 }
 
 impl AsRef<Base> for Point {
-    fn as_ref(&self) -> &Base { &self.object }
+    fn as_ref(&self) -> &Base {
+        &self.object
+    }
 }
 
 impl Object for Point {
@@ -226,10 +217,7 @@ pub struct LightData {
 
 impl<'a> From<&'a hub::LightData> for LightData {
     fn from(from: &'a hub::LightData) -> Self {
-        LightData {
-            color: from.color,
-            intensity: from.intensity,
-        }
+        LightData { color: from.color, intensity: from.intensity }
     }
 }
 
@@ -254,10 +242,6 @@ impl<'a> From<&'a hub::LightData> for HemisphereLightData {
             SubLight::Hemisphere { ground } => ground,
             _ => panic!("Bad sub-light for `Hemisphere`: {:?}", from.sub_light),
         };
-        HemisphereLightData {
-            sky_color: from.color,
-            ground_color,
-            intensity: from.intensity,
-        }
+        HemisphereLightData { sky_color: from.color, ground_color, intensity: from.intensity }
     }
 }

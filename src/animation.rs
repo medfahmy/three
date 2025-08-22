@@ -104,17 +104,16 @@
 //! [`Mixer::action`]: struct.Mixer.html#method.action
 //! [`Mixer::update`]: struct.Mixer.html#method.update
 
-use cgmath;
-use froggy;
-use mint;
-use object::{Base, Object};
+// use object::{Base, Object};
 
 use std::hash::{Hash, Hasher};
 use std::sync::mpsc;
 
+use cgmath::VectorSpace;
 
 /// A target of an animation.
-pub type Target = Base;
+// pub type Target = Base;
+pub type Target = ();
 
 /// Describes the interpolation behaviour between keyframes.
 #[derive(Clone, Copy, Debug, Eq, Hash, PartialEq)]
@@ -249,10 +248,7 @@ pub struct Action {
 }
 
 impl PartialEq for Action {
-    fn eq(
-        &self,
-        other: &Action,
-    ) -> bool {
+    fn eq(&self, other: &Action) -> bool {
         self.pointer == other.pointer
     }
 }
@@ -260,10 +256,7 @@ impl PartialEq for Action {
 impl Eq for Action {}
 
 impl Hash for Action {
-    fn hash<H: Hasher>(
-        &self,
-        state: &mut H,
-    ) {
+    fn hash<H: Hasher>(&self, state: &mut H) {
         self.pointer.hash(state);
     }
 }
@@ -335,10 +328,7 @@ pub struct Mixer {
 }
 
 impl Action {
-    fn send(
-        &mut self,
-        operation: Operation,
-    ) -> &mut Self {
+    fn send(&mut self, operation: Operation) -> &mut Self {
         let message = (self.pointer.downgrade(), operation);
         let _ = self.tx.send(message);
         self
@@ -365,10 +355,7 @@ impl Action {
     }
 
     /// Sets the animation loop mode.
-    pub fn set_loop_mode(
-        &mut self,
-        loop_mode: LoopMode,
-    ) -> &mut Self {
+    pub fn set_loop_mode(&mut self, loop_mode: LoopMode) -> &mut Self {
         self.send(Operation::SetLoopMode(loop_mode))
     }
 }
@@ -393,10 +380,7 @@ impl Mixer {
         }
     }
 
-    fn update_actions(
-        &mut self,
-        delta_time: f32,
-    ) {
+    fn update_actions(&mut self, delta_time: f32) {
         for action in self.actions.iter_mut() {
             action.update(delta_time);
         }
@@ -412,10 +396,7 @@ impl Mixer {
     /// Spawns a new animation [`Action`] to be updated by this mixer.
     ///
     /// [`Action`]: struct.Action.html
-    pub fn action(
-        &mut self,
-        clip: Clip,
-    ) -> Action {
+    pub fn action(&mut self, clip: Clip) -> Action {
         let action_data = ActionData::new(clip);
         let pointer = self.actions.create(action_data);
         let tx = self.tx.clone();
@@ -423,10 +404,7 @@ impl Mixer {
     }
 
     /// Updates the actions owned by the mixer.
-    pub fn update(
-        &mut self,
-        delta_time: f32,
-    ) {
+    pub fn update(&mut self, delta_time: f32) {
         self.process_messages();
         self.update_actions(delta_time);
     }
@@ -434,21 +412,11 @@ impl Mixer {
 
 impl ActionData {
     fn new(clip: Clip) -> Self {
-        ActionData {
-            clip: clip,
-            enabled: true,
-            loop_mode: LoopMode::Repeat { limit: None },
-            paused: false,
-            local_time: 0.0,
-            local_time_scale: 1.0,
-        }
+        ActionData { clip: clip, enabled: true, loop_mode: LoopMode::Repeat { limit: None }, paused: false, local_time: 0.0, local_time_scale: 1.0 }
     }
 
     /// Updates a single animation action.
-    fn update(
-        &mut self,
-        delta_time: f32,
-    ) {
+    fn update(&mut self, delta_time: f32) {
         if self.paused || !self.enabled {
             return;
         }
@@ -475,45 +443,41 @@ impl ActionData {
                 (Binding::Orientation, &Values::Euler(ref values)) => {
                     let frame_start_value = {
                         let euler = values[frame_index];
-                        cgmath::Quaternion::from(cgmath::Euler::new(
-                            cgmath::Rad(euler.a),
-                            cgmath::Rad(euler.b),
-                            cgmath::Rad(euler.c),
-                        ))
+                        cgmath::Quaternion::from(cgmath::Euler::new(cgmath::Rad(euler.a), cgmath::Rad(euler.b), cgmath::Rad(euler.c)))
                     };
                     let frame_end_value = {
                         let euler = values[frame_index + 1];
-                        cgmath::Quaternion::from(cgmath::Euler::new(
-                            cgmath::Rad(euler.a),
-                            cgmath::Rad(euler.b),
-                            cgmath::Rad(euler.c),
-                        ))
+                        cgmath::Quaternion::from(cgmath::Euler::new(cgmath::Rad(euler.a), cgmath::Rad(euler.b), cgmath::Rad(euler.c)))
                     };
                     let update = frame_start_value.slerp(frame_end_value, s);
-                    target.set_orientation(update);
+                    todo!()
+                    // target.set_orientation(update);
                 }
                 (Binding::Orientation, &Values::Quaternion(ref values)) => {
                     let frame_start_value: cgmath::Quaternion<f32> = values[frame_index].into();
                     let frame_end_value: cgmath::Quaternion<f32> = values[frame_index + 1].into();
                     let update = frame_start_value.slerp(frame_end_value, s);
-                    target.set_orientation(update);
+                    todo!()
+                    // target.set_orientation(update);
                 }
                 (Binding::Position, &Values::Vector3(ref values)) => {
                     use cgmath::{EuclideanSpace, InnerSpace};
                     let frame_start_value: cgmath::Vector3<f32> = values[frame_index].into();
                     let frame_end_value: cgmath::Vector3<f32> = values[frame_index + 1].into();
                     let update = frame_start_value.lerp(frame_end_value, s);
-                    target.set_position(cgmath::Point3::from_vec(update));
+                    todo!()
+                    // target.set_orientation(update);
                 }
                 (Binding::Scale, &Values::Scalar(ref values)) => {
                     let frame_start_value = values[frame_index];
                     let frame_end_value = values[frame_index + 1];
                     let update = frame_start_value * (1.0 - s) + frame_end_value * s;
-                    target.set_scale(update);
+                    todo!()
+                    // target.set_orientation(update);
                 }
                 (Binding::Weights, &Values::Scalar(ref values)) => {
                     // values are: first all scalars for shape[0], then all scalars for shape[1], etc
-                    let update = values
+                    let update: Vec<_> = values
                         .chunks(track.times.len())
                         .map(|chunk| {
                             let start_value = chunk[frame_index];
@@ -521,7 +485,8 @@ impl ActionData {
                             start_value * (1.0 - s) + end_value * s
                         })
                         .collect();
-                    target.set_weights(update);
+                    todo!()
+                    // target.set_weights(update);
                 }
                 _ => panic!("Unsupported (binding, value) pair"),
             }
@@ -546,10 +511,7 @@ impl ActionData {
 }
 
 impl Track {
-    fn frame_at_time(
-        &self,
-        t: f32,
-    ) -> FrameRef {
+    fn frame_at_time(&self, t: f32) -> FrameRef {
         if t < self.times[0] {
             // The clip hasn't started yet.
             return FrameRef::Unstarted;

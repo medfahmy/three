@@ -1,5 +1,3 @@
-extern crate three;
-
 fn main() {
     let mut window = three::Window::new("Three-rs text example");
 
@@ -10,10 +8,7 @@ fn main() {
     let zrange = -1.0 .. 1.0;
     let camera = window.factory.orthographic_camera(center, yextent, zrange);
 
-    let deja_vu = window.factory.load_font(format!(
-        "{}/data/fonts/DejaVuSans.ttf",
-        env!("CARGO_MANIFEST_DIR")
-    ));
+    let deja_vu = window.factory.load_font(format!("{}/data/fonts/DejaVuSans.ttf", env!("CARGO_MANIFEST_DIR")));
     let karla = window.factory.load_font_karla();
 
     let mut counter_text = window.factory.ui_text(&deja_vu, "");

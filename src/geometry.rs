@@ -1,7 +1,7 @@
 //! Structures for creating and storing geometric primitives.
 
-use genmesh::{EmitTriangles, Triangulate, Vertex as GenVertex};
 use genmesh::generators::{self, IndexedPolygon, SharedVertex};
+use genmesh::{EmitTriangles, Triangulate, Vertex as GenVertex};
 use mint;
 
 /// A collection of vertices, their normals, and faces that defines the
@@ -12,7 +12,6 @@ use mint;
 /// Tetrahedron of unit height and base radius.
 ///
 /// ```rust
-/// # extern crate three;
 /// # fn make_tetrahedron() -> three::Geometry {
 /// use std::f32::consts::PI;
 ///
@@ -101,20 +100,10 @@ impl Geometry {
     /// let geometry = three::Geometry::with_vertices(vertices);
     /// ```
     pub fn with_vertices(vertices: Vec<mint::Point3<f32>>) -> Self {
-        Geometry {
-            base: Shape {
-                vertices,
-                .. Shape::default()
-            },
-            .. Geometry::default()
-        }
+        Geometry { base: Shape { vertices, ..Shape::default() }, ..Geometry::default() }
     }
 
-    fn generate<P, G, Fpos, Fnor>(
-        gen: G,
-        fpos: Fpos,
-        fnor: Fnor,
-    ) -> Self
+    fn generate<P, G, Fpos, Fnor>(gen: G, fpos: Fpos, fnor: Fnor) -> Self
     where
         P: EmitTriangles<Vertex = usize>,
         G: IndexedPolygon<P> + SharedVertex<GenVertex>,
@@ -122,17 +111,10 @@ impl Geometry {
         Fnor: Fn(GenVertex) -> mint::Vector3<f32>,
     {
         Geometry {
-            base: Shape {
-                vertices: gen.shared_vertex_iter().map(fpos).collect(),
-                normals: gen.shared_vertex_iter().map(fnor).collect(),
-                .. Shape::default()
-            },
+            base: Shape { vertices: gen.shared_vertex_iter().map(fpos).collect(), normals: gen.shared_vertex_iter().map(fnor).collect(), ..Shape::default() },
             // TODO: Add similar functions for tangents and texture coords
-            faces: gen.indexed_polygon_iter()
-                .triangulate()
-                .map(|t| [t.x as u32, t.y as u32, t.z as u32])
-                .collect(),
-            .. Geometry::default()
+            faces: gen.indexed_polygon_iter().triangulate().map(|t| [t.x as u32, t.y as u32, t.z as u32]).collect(),
+            ..Geometry::default()
         }
     }
 
@@ -146,21 +128,13 @@ impl Geometry {
     /// Unit square in the XY plane, centered at the origin.
     ///
     /// ```rust
-    /// # extern crate three;
     /// fn make_square() -> three::Geometry {
     ///     three::Geometry::plane(1.0, 1.0)
     /// }
     /// # fn main() { let _ = make_square(); }
     /// ```
-    pub fn plane(
-        width: f32,
-        height: f32,
-    ) -> Self {
-        Self::generate(
-            generators::Plane::new(),
-            |GenVertex { pos, .. }| [pos.x * 0.5 * width, pos.y * 0.5 * height, 0.0].into(),
-            |v| v.normal.into(),
-        )
+    pub fn plane(width: f32, height: f32) -> Self {
+        Self::generate(generators::Plane::new(), |GenVertex { pos, .. }| [pos.x * 0.5 * width, pos.y * 0.5 * height, 0.0].into(), |v| v.normal.into())
     }
 
     /// Creates cuboidal geometry.
@@ -173,28 +147,13 @@ impl Geometry {
     /// Unit cube, centered at the origin.
     ///
     /// ```rust
-    /// # extern crate three;
     /// fn make_cube() -> three::Geometry {
     ///     three::Geometry::cuboid(1.0, 1.0, 1.0)
     /// }
     /// # fn main() { let _ = make_cube(); }
     /// ```
-    pub fn cuboid(
-        width: f32,
-        height: f32,
-        depth: f32,
-    ) -> Self {
-        Self::generate(
-            generators::Cube::new(),
-            |GenVertex { pos, .. }| {
-                [
-                    pos.x * 0.5 * width,
-                    pos.y * 0.5 * height,
-                    pos.z * 0.5 * depth,
-                ].into()
-            },
-            |v| v.normal.into(),
-        )
+    pub fn cuboid(width: f32, height: f32, depth: f32) -> Self {
+        Self::generate(generators::Cube::new(), |GenVertex { pos, .. }| [pos.x * 0.5 * width, pos.y * 0.5 * height, pos.z * 0.5 * depth].into(), |v| v.normal.into())
     }
 
     /// Creates cylindrial geometry.
@@ -204,7 +163,6 @@ impl Geometry {
     /// Cylinder of unit height and radius, using 12 segments at each end.
     ///
     /// ```rust
-    /// # extern crate three;
     /// fn make_cylinder() -> three::Geometry {
     ///     three::Geometry::cylinder(1.0, 1.0, 1.0, 12)
     /// }
@@ -214,18 +172,12 @@ impl Geometry {
     /// Cone of unit height and unit radius at the bottom.
     ///
     /// ```rust
-    /// # extern crate three;
     /// fn make_cone() -> three::Geometry {
     ///     three::Geometry::cylinder(0.0, 1.0, 1.0, 12)
     /// }
     /// # fn main() { let _ = make_cone(); }
     /// ```
-    pub fn cylinder(
-        radius_top: f32,
-        radius_bottom: f32,
-        height: f32,
-        radius_segments: usize,
-    ) -> Self {
+    pub fn cylinder(radius_top: f32, radius_bottom: f32, height: f32, radius_segments: usize) -> Self {
         Self::generate(
             generators::Cylinder::new(radius_segments),
             //Three.js has height along the Y axis for some reason
@@ -245,21 +197,12 @@ impl Geometry {
     ///    the sphere meridian that lies in the YZ plane.
     ///
     /// ```rust
-    /// # extern crate three;
     /// fn make_sphere() -> three::Geometry {
     ///     three::Geometry::uv_sphere(1.0, 12, 12)
     /// }
     /// # fn main() { let _ = make_sphere(); }
     /// ```
-    pub fn uv_sphere(
-        radius: f32,
-        equatorial_segments: usize,
-        meridional_segments: usize,
-    ) -> Self {
-        Self::generate(
-            generators::SphereUv::new(equatorial_segments, meridional_segments),
-            |GenVertex { pos, .. }| [pos.x * radius, pos.y * radius, pos.z * radius].into(),
-            |v| v.normal.into(),
-        )
+    pub fn uv_sphere(radius: f32, equatorial_segments: usize, meridional_segments: usize) -> Self {
+        Self::generate(generators::SphereUv::new(equatorial_segments, meridional_segments), |GenVertex { pos, .. }| [pos.x * radius, pos.y * radius, pos.z * radius].into(), |v| v.normal.into())
     }
 }

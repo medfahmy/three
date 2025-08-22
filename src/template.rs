@@ -153,7 +153,9 @@ impl Template {
     /// ```
     ///
     /// [`Factory::group`]: ../struct.Factory.html#method.group
-    pub fn new() -> Template { Default::default() }
+    pub fn new() -> Template {
+        Default::default()
+    }
 }
 
 /// Common data used by all object types.
@@ -354,13 +356,7 @@ impl LightTemplate {
     ///
     /// [`Factory::ambient_light`]: ../struct.Factory.html#method.ambient_light
     pub fn ambient(object: usize, color: Color, intensity: f32) -> LightTemplate {
-        LightTemplate {
-            object,
-
-            color,
-            intensity,
-            sub_light: SubLightTemplate::Ambient,
-        }
+        LightTemplate { object, color, intensity, sub_light: SubLightTemplate::Ambient }
     }
 
     /// Creates a new template for a directional light, analogous to [`Factory::directional_light`].
@@ -382,13 +378,7 @@ impl LightTemplate {
     ///
     /// [`Factory::directional_light`]: ../struct.Factory.html#method.directional_light
     pub fn directional(object: usize, color: Color, intensity: f32) -> LightTemplate {
-        LightTemplate {
-            object,
-
-            color,
-            intensity,
-            sub_light: SubLightTemplate::Directional,
-        }
+        LightTemplate { object, color, intensity, sub_light: SubLightTemplate::Directional }
     }
 
     /// Creates a new template for a point light, analogous to [`Factory::point_light`].
@@ -410,13 +400,7 @@ impl LightTemplate {
     ///
     /// [`Factory::point_light`]: ../struct.Factory.html#method.point_light
     pub fn point(object: usize, color: Color, intensity: f32) -> LightTemplate {
-        LightTemplate {
-            object,
-
-            color,
-            intensity,
-            sub_light: SubLightTemplate::Point,
-        }
+        LightTemplate { object, color, intensity, sub_light: SubLightTemplate::Point }
     }
 
     /// Creates a new template for a hemisphere light, analogous to [`Factory::hemisphere_light`].
@@ -438,19 +422,8 @@ impl LightTemplate {
     /// ```
     ///
     /// [`Factory::hemisphere_light`]: ../struct.Factory.html#method.hemisphere_light
-    pub fn hemisphere(
-        object: usize,
-        sky_color: Color,
-        ground_color: Color,
-        intensity: f32,
-    ) -> LightTemplate {
-        LightTemplate {
-            object,
-
-            color: sky_color,
-            intensity,
-            sub_light: SubLightTemplate::Hemisphere { ground: ground_color },
-        }
+    pub fn hemisphere(object: usize, sky_color: Color, ground_color: Color, intensity: f32) -> LightTemplate {
+        LightTemplate { object, color: sky_color, intensity, sub_light: SubLightTemplate::Hemisphere { ground: ground_color } }
     }
 }
 

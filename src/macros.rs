@@ -10,8 +10,6 @@
 ///
 /// ```rust
 /// #[macro_use]
-/// extern crate three;
-///
 /// three_object!(MyStruct::mesh);
 /// struct MyStruct {
 ///     mesh: three::Mesh,
@@ -23,8 +21,6 @@
 ///
 /// ```rust
 /// #[macro_use]
-/// extern crate three;
-///
 /// // Equivalent to `three_object!(MyStruct::object);`
 /// three_object!(MyStruct);
 /// struct MyStruct {
@@ -46,24 +42,24 @@ macro_rules! three_object {
         impl $crate::Object for $name {
             type Data = ();
 
-            fn resolve_data(&self, _: & $crate::scene::SyncGuard) -> Self::Data {}
+            fn resolve_data(&self, _: &$crate::scene::SyncGuard) -> Self::Data {}
         }
     };
 
     ($name:ident) => {
-        three_object!($name ::object);
-    }
+        three_object!($name::object);
+    };
 }
 
-macro_rules! derive_DowncastObject {
-    ($type:ident => $pattern:path) => {
-        impl ::object::DowncastObject for $type {
-            fn downcast(object: ::object::ObjectType) -> Option<Self> {
-                match object {
-                    $pattern (inner) => Some(inner),
-                    _ => None,
-                }
-            }
-        }
-    }
-}
+// macro_rules! derive_DowncastObject {
+//     ($type:ident => $pattern:path) => {
+//         impl ::object::DowncastObject for $type {
+//             fn downcast(object: ::object::ObjectType) -> Option<Self> {
+//                 match object {
+//                     $pattern(inner) => Some(inner),
+//                     _ => None,
+//                 }
+//             }
+//         }
+//     };
+// }

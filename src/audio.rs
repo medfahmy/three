@@ -1,13 +1,13 @@
 //! Primitives for audio playback.
 
-use hub;
-use object::{Base, ObjectType};
+use crate::hub::Operation;
+
 use std::fmt;
 use std::io::Cursor;
 use std::rc::Rc;
 use std::time::Duration;
 
-use rodio as r;
+use object::{Base, ObjectType};
 use rodio::Source as _Source;
 
 /// Audio segment with sound effects.
@@ -25,53 +25,31 @@ pub struct Clip {
 
 impl Clip {
     pub(crate) fn new(data: Vec<u8>) -> Self {
-        Clip {
-            data: Rc::new(data),
-            repeat: false,
-            duration: None,
-            delay: None,
-            fade_in: None,
-            speed: 1.0,
-        }
+        Clip { data: Rc::new(data), repeat: false, duration: None, delay: None, fade_in: None, speed: 1.0 }
     }
 
     /// Passing true enforces looping sound. Defaults to `false`.
-    pub fn repeat(
-        &mut self,
-        enable: bool,
-    ) {
+    pub fn repeat(&mut self, enable: bool) {
         self.repeat = enable;
     }
 
     /// Clip the sound to the desired duration.
-    pub fn take_duration(
-        &mut self,
-        duration: Duration,
-    ) {
+    pub fn take_duration(&mut self, duration: Duration) {
         self.duration = Some(duration);
     }
 
     /// Play sound after desired delay.
-    pub fn delay(
-        &mut self,
-        delay: Duration,
-    ) {
+    pub fn delay(&mut self, delay: Duration) {
         self.delay = Some(delay);
     }
 
     /// Fade in sound in desired duration.
-    pub fn fade_in(
-        &mut self,
-        duration: Duration,
-    ) {
+    pub fn fade_in(&mut self, duration: Duration) {
         self.fade_in = Some(duration);
     }
 
     /// Adjust the playback speed. Defaults to `1.0`.
-    pub fn speed(
-        &mut self,
-        ratio: f32,
-    ) {
+    pub fn speed(&mut self, ratio: f32) {
         self.speed = ratio;
     }
 }
@@ -94,16 +72,14 @@ impl AudioData {
     pub(crate) fn new() -> Self {
         // TODO: Change to `r::default_endpoint()` in next `rodio` release.
         #[allow(deprecated)]
-        let endpoint = if let Some(endpoint) = r::default_output_device() {
+        let endpoint = if let Some(endpoint) = rodio::default_output_device() {
             endpoint
         } else {
             // TODO: Better error handling
             panic!("Can't get default audio endpoint, can't play sound");
         };
-        let sink = r::Sink::new(&endpoint);
-        AudioData {
-            source: SourceInternal::D2(sink),
-        }
+        let sink = rodio::Sink::new(&endpoint);
+        AudioData { source: SourceInternal::D2(sink) }
     }
 }
 
@@ -124,10 +100,7 @@ impl Source {
     }
 
     /// Add clip to the queue.
-    pub fn play(
-        &self,
-        clip: &Clip,
-    ) {
+    pub fn play(&self, clip: &Clip) {
         let msg = hub::Operation::SetAudio(Operation::Append(clip.clone()));
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }
@@ -155,10 +128,7 @@ impl Source {
     /// Adjust playback volume.
     ///
     /// Default value is `1.0`.
-    pub fn set_volume(
-        &self,
-        volume: f32,
-    ) {
+    pub fn set_volume(&self, volume: f32) {
         let msg = hub::Operation::SetAudio(Operation::SetVolume(volume));
         let _ = self.object.tx.send((self.object.node.downgrade(), msg));
     }
@@ -167,15 +137,12 @@ impl Source {
 //TODO: Remove dead_code lint
 #[allow(dead_code)]
 pub(crate) enum SourceInternal {
-    D2(r::Sink),
-    D3(r::SpatialSink),
+    D2(rodio::Sink),
+    D3(rodio::SpatialSink),
 }
 
 impl fmt::Debug for SourceInternal {
-    fn fmt(
-        &self,
-        f: &mut fmt::Formatter,
-    ) -> fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             SourceInternal::D2(_) => write!(f, "SourceInternal::D2"),
             SourceInternal::D3(_) => write!(f, "SourceInternal::D3"),
@@ -205,24 +172,18 @@ impl SourceInternal {
         }
     }
 
-    pub(crate) fn set_volume(
-        &mut self,
-        volume: f32,
-    ) {
+    pub(crate) fn set_volume(&mut self, volume: f32) {
         match *self {
             SourceInternal::D2(ref mut sink) => sink.set_volume(volume),
             _ => unimplemented!(),
         }
     }
 
-    pub(crate) fn append(
-        &mut self,
-        clip: Clip,
-    ) {
+    pub(crate) fn append(&mut self, clip: Clip) {
         match *self {
             SourceInternal::D2(ref mut sink) => {
                 let vec: Vec<u8> = (&*clip.data).clone();
-                let decoder = r::Decoder::new(Cursor::new(vec));
+                let decoder = rodio::Decoder::new(Cursor::new(vec));
                 let mut boxed: Box<r::Source<Item = i16> + Send> = if let Ok(decoder) = decoder {
                     Box::new(decoder)
                 } else {
